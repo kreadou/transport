@@ -1,0 +1,27 @@
+{% for facturation in facturations %}
+  <tr>
+    <td>{{ facturation.date_prise|date:"d M y" }}</td>
+    <td>{{ facturation.type_facturation }}</td>
+    <td>{{ facturation.vehicule.immatriculation }}</td>
+    <td align="right">{{ facturation.quantite }}</td>
+    <td align="right">{{ facturation.kilometrage }}</td>
+    <td>{{ facturation.chauffeur }}</td>
+
+    <td style="width:200px">
+      <button type="button"
+              class="btn btn-warning btn-sm js-update-facturation" data-toggle="modal" data-target="#modal-facturation"
+              data-url="{% url 'facturation:facturation_update' facturation.id %}">
+        <span class="glyphicon glyphicon-pencil"></span> Modifier
+      </button>
+      <button type="button"
+              class="btn btn-danger btn-sm js-delete-facturation" data-toggle="modal" data-target="#modal-facturation"
+              data-url="{% url 'facturation:facturation_delete' facturation.id %}">
+        <span class="glyphicon glyphicon-trash"></span> Supprimer
+      </button>
+    </td>
+  </tr>
+{% empty %}
+  <tr>
+    <td colspan="8" class="text-center bg-warning">No facturation</td>
+  </tr>
+{% endfor %}

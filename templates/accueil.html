@@ -1,0 +1,190 @@
+{% extends 'parametre/base.html' %}
+{% load static %}
+{% load has_group %}
+
+
+{% block content %}
+<div class="row">
+
+	{#% if perms.parametre.add_participant %#}
+	<a href="{% url 'parametre:operation' %}">
+	{#% endif %#}
+	<div class="col-xs-4">
+	  <div class="box box-default">
+	    <img class="img-rectangle" src="{% static 'images/operation.jpg' %}" width="100%" height="130" alt="User Avatar">
+	    <div class="box-footer" style="background-color:gray; color:white; border-bottom:5px solid orange; border-top:5px solid orange;">
+	      <div class="row">
+	        <div class="col-sm-12">
+	          <div class="description-block">
+	            <h3 class="description-header">GESTION DES OPERATIONS</h3>
+	          </div>
+	        </div>
+	      </div>    
+	    </div>  
+	   </div>  
+	</div>
+	{#% if perms.parametre.add_participant %#}
+	</a>
+	{#% endif %#}  
+
+	{#% if perms.parametre.add_participant %#}
+	<a href="{% url 'carburant:accueil' %}">
+	{#% endif %#}
+	<div class="col-xs-4">
+	  <div class="box box-default">
+	    <img class="img-rectangle" src="{% static 'images/carburant.jpg' %}" width="100%" height="130" alt="User Avatar">
+	    <div class="box-footer" style="background-color:gray; color:white; border-bottom:5px solid orange; border-top:5px solid orange;">
+	        <div class="col-sm-12">
+	          <div class="description-block">
+	            <h3 class="description-header"><b>CARBURANT</b></h3>
+	          </div>
+	        </div>
+	      </div>    
+	    </div>  
+	</div>
+	{#% if perms.parametre.add_participant %#}
+	</a>
+	{#% endif %#} 
+
+	{#% if perms.parametre.add_participant %#}
+	<a href="{% url 'entretien:accueil' %}">
+	{#% endif %#}
+	<div class="col-xs-4">
+	  <div class="box box-default">
+	    <img class="img-rectangle" src="{% static 'images/entretien.jpg' %}" width="100%" height="130" alt="User Avatar">
+	    <div class="box-footer" style="background-color:gray; color:white; border-bottom:5px solid orange; border-top:5px solid orange;">
+	        <div class="col-sm-12">
+	          <div class="description-block">
+	            <h3 class="description-header"><b>ENTRETIEN - REPARATION</b></h3>
+	            <span class="description-text"></span>
+	          </div>
+	        </div>
+	      </div>    
+	    </div>          
+	  </div>  
+	{#% if perms.parametre.add_participant %#}
+	</a>
+	{#% endif %#}    
+
+	{#% if perms.parametre.add_participant %#}
+	<a href="{% url 'vehicule:accueil' %}">
+	{#% endif %#}
+	<div class="col-xs-4">
+	  <div class="box box-default">
+	    <img class="img-rectangle" src="{% static 'images/vehicule.jpg' %}" width="100%" height="130" alt="User Avatar">
+	    <div class="box-footer" style="background-color:gray; color:white; border-bottom:5px solid orange; border-top:5px solid orange;">
+	        <div class="col-sm-12">
+	          <div class="description-block">
+	            <h3 class="description-header"><b>VEHICULES</b></h3>
+	            <span class="description-text"></span>
+	          </div>
+	        </div>
+	      </div>    
+	    </div>          
+	  </div>  
+	{#% if perms.parametre.add_participant %#}
+	</a>
+	{#% endif %#}   
+
+
+	{#% if perms.parametre.add_participant %#}
+	<a href="{% url 'chauffeur:accueil' %}">
+	{#% endif %#}
+	<div class="col-xs-4">
+	  <div class="box box-default">
+	    <img class="img-rectangle" src="{% static 'images/chauffeur.jpg' %}" width="100%" height="130" alt="User Avatar">
+	    <div class="box-footer" style="background-color:gray; color:white; border-bottom:5px solid orange; border-top:5px solid orange;">
+	        <div class="col-sm-12">
+	          <div class="description-block">
+	            <h3 class="description-header"><b>CHAUFFEURS</b></h3>
+	            <span class="description-text"></span>
+	          </div>
+	        </div>
+	      </div>    
+	    </div>          
+	  </div>  
+	{#% if perms.parametre.add_participant %#}
+	</a>
+	{#% endif %#}    
+
+
+	{#% if perms.parametre.add_participant %#}
+	<a href="{% url 'alerte:accueil' %}">
+	{#% endif %#}
+	<div class="col-xs-4">
+	  <div class="box box-default">
+	    <img class="img-rectangle" src="{% static 'images/alerte.jpg' %}" width="100%" height="130" alt="User Avatar">
+	    <div class="box-footer" style="background-color:gray; color:white; border-bottom:5px solid orange; border-top:5px solid orange;">
+	        <div class="col-sm-12">
+	          <div class="description-block">
+	            <h3 class="description-header"><b>ALERTES</b></h3>
+	            <span class="description-text"></span>
+	          </div>
+	        </div>
+	      </div>    
+	    </div>          
+	  </div>  
+	{#% if perms.parametre.add_participant %#}
+	</a>
+	{#% endif %#}   
+
+
+	{#% if user.is_superuser or request.user|has_group:"Administrateur" %#}
+	<a href="{% url 'parametre:profil_lister' %}">
+	{#% endif %#}
+	<div class="col-xs-4">
+	  <div class="box box-default">
+	    <img class="img-rectangle" src="{% static 'images/user.jpg' %}" width="100%" height="130" alt="User Avatar">
+	    <div class="box-footer" style="background-color:gray; color:white; border-bottom:5px solid orange; border-top:5px solid orange;">
+	        <div class="col-sm-12">
+	          <div class="description-block">
+	            <h3 class="description-header"><b>PROFILS</b></h3>
+	            <span class="description-text"></span>
+	          </div>
+	        </div>
+	      </div>    
+	    </div>          
+	  </div>  
+	{#% if user.is_superuser %#}
+	</a>
+	{#% endif %#}    
+
+
+	{#% if perms.parametre.add_participant %#}
+	<a href="{% url 'tableaubord:accueil' %}">
+	{#% endif %#}
+	<div class="col-xs-4">
+	  <div class="box box-default">
+	    <img class="img-rectangle" src="{% static 'images/tableaubord.jpg' %}" width="100%" height="130" alt="User Avatar">
+	    <div class="box-footer" style="background-color:gray; color:white; border-bottom:5px solid orange; border-top:5px solid orange;">
+	        <div class="col-sm-12">
+	          <div class="description-block">
+	            <h3 class="description-header"><b>TABLEAU DE BORD</b></h3>
+	            <span class="description-text"></span>
+	          </div>
+	        </div>
+	      </div>    
+	    </div>          
+	  </div>  
+	{#% if perms.parametre.add_participant %#}
+	</a>
+	{#% endif %#}   
+
+	<a href="{% url 'parametre:login' %}">
+	<div class="col-xs-4">
+	  <div class="box box-default">
+	    <img class="img-rectangle" src="{% static 'images/deconnexion.jpg' %}" width="100%" height="130" alt="User Avatar">
+	    <div class="box-footer" style="background-color:gray; color:white; border-bottom:5px solid orange; border-top:5px solid orange;">
+	        <div class="col-sm-12">
+	          <div class="description-block">
+	            <h3 class="description-header"><b>DECONNEXION</b></h3>
+	            <span class="description-text"></span>
+	          </div>
+	        </div>
+	      </div>    
+	    </div>          
+	  </div>
+	</a>  
+
+</div>
+{% endblock content %}

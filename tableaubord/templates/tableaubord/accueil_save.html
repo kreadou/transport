@@ -1,0 +1,931 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
+{% load crispy_forms_tags %}
+
+
+{% block aside %} 
+<script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+{{ form.media }}
+
+
+<aside class="main-sidebar">
+
+  <style type="text/css">
+    .list-group { border:2px solid #ccc; height: 200px; overflow-y: scroll;
+  </style>
+
+    <!-- sidebar: style can be found in sidebar.less -->
+    <section class="sidebar">
+      <!-- Sidebar user panel -->
+      <div class="user-panel">
+        <div class="pull-left image">
+          <img src="{{ MEDIA_URL }}{{ request.user.profil.photo.url }}" class="img-circle" alt="User Image">
+        </div>
+        <div class="pull-left info">
+          <p>{{ user.profil.nom }} {{ user.profil.prenoms }}</p>
+          <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
+          <p><small>{{ user.profil.fonction }}</small></p>
+        </div>
+      </div>
+
+      <div class="box-orange list-group-item list-group-item-action active" style="background-color:green; border-bottom:2px solid gray; color:white;"><b>Périodes</b><span class="pull-right badge bg-danger"></span></div>
+      <div class="list-group">
+        <div class="list-group-item list-group-item-action" style="border-bottom:2px solid gray;"><b>{{ form.periode_du|as_crispy_field }}</b></div>
+        <div class="list-group-item list-group-item-action" style="border-bottom:2px solid gray;"><b>{{ form.periode_au|as_crispy_field }}</b></div>
+      </div>
+
+      <p class="box-orange list-group-item list-group-item-action active" style="background-color:green; border-bottom:2px solid gray; color:white;"><b>Dossiers</b><span class="pull-right badge bg-danger">{{ form.dossiers|length }}</span></p>
+      <div class="list-group">
+        {% for i in form.dossiers %}
+          <a href="{#% url 'publication:ouvrage_lister' %#}" class="list-group-item list-group-item-action" style="border-bottom:2px solid gray;"><b>{{ i }}</b></a>
+        {% endfor %}  
+      </div>
+
+      <p class="box-orange list-group-item list-group-item-action active" style="background-color:green; border-bottom:2px solid gray; color:white;"><b>Marchandises</b><span class="pull-right badge bg-danger">{{ form.marchandises|length }}</span></p>
+      <div class="list-group">
+        {% for i in form.marchandises %}
+          <a href="{#% url 'publication:ouvrage_lister' %#}" class="list-group-item list-group-item-action" style="border-bottom:2px solid gray;"><b>{{ i }}</b></a>
+        {% endfor %}  
+      </div>
+
+      <p class="box-orange list-group-item list-group-item-action active" style="background-color:green; border-bottom:2px solid gray; color:white;"><b>Trajets</b><span class="pull-right badge bg-danger">{{ form.trajets|length }}</span></p>
+      <div class="list-group">
+        {% for i in form.trajets %}
+          <a href="{#% url 'publication:ouvrage_lister' %#}" class="list-group-item list-group-item-action" style="border-bottom:2px solid gray;"><b>{{ i }}</b></a>
+        {% endfor %}  
+      </div>
+
+      <p class="box-orange list-group-item list-group-item-action active" style="background-color:green; border-bottom:2px solid gray; color:white;"><b>Véhicules</b><span class="pull-right badge bg-danger">{{ form.vehicules|length }}</span></p>
+      <div class="list-group">
+        {% for i in form.vehicules %}
+          <a href="{#% url 'publication:ouvrage_lister' %#}" class="list-group-item list-group-item-action" style="border-bottom:2px solid gray;"><b>{{ i }}</b></a>
+        {% endfor %}  
+      </div>
+
+      <p class="box-orange list-group-item list-group-item-action active" style="background-color:green; border-bottom:2px solid gray; color:white;"><b>Chauffeurs</b><span class="pull-right badge bg-danger">{{ form.chauffeurs|length }}</span></p>
+      <div class="list-group">
+        {% for i in form.chauffeurs %}
+          <a href="{#% url 'publication:ouvrage_lister' %#}" class="list-group-item list-group-item-action" style="border-bottom:2px solid gray;"><b>{{ i }}</b></a>
+        {% endfor %}  
+      </div>
+
+    </section>
+</aside>
+
+
+<script src="{% static 'js/jquery-3.5.1.js' %}"></script>
+<script type="text/javascript">
+  $('#id_periode_du').change(function() {
+    var date_du = $("#id_periode_du").val();
+    var date_au = $("#id_periode_au").val();
+
+    alert(10);
+    var url = "accueil_traitement";
+    $.ajax({
+        url: url,
+        data: {
+          'date_du': date_du, 'date_au':date_au
+        },
+        success: function (data) {
+        }      
+      });
+    });
+
+  $('#id_periode_au').change(function() {
+    var date_du = $("#id_periode_du").val();
+    var date_au = $("#id_periode_au").val();
+    alert(10000);
+    var url = "accueil_traitement";
+    $.ajax({
+        url: url,
+        data: {
+          'date_du': date_du, 'date_au':date_au
+        },
+        success: function (data) {
+        }      
+      });
+    });
+
+</script>
+{% endblock aside %}    
+
+
+{% block content %}    
+<section class="content-header">
+  <h1>Tableau de bord général</h1>
+  <ol class="breadcrumb">
+   </ol>
+</section>
+
+<!-- Main content -->
+<section class="content">
+
+  <p><h3><center><b>CHIFFRES D'AFFAIRES</b></center></h3></p>
+  <div class="row">
+      
+    <div class="col-12 col-sm-6 col-md-3">
+      <div class="info-box">
+        <span class="info-box-icon bg-aqua"><i class="fa fa-money"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text">CA HT TOTAL</span>
+          <span class="info-box-number">
+            {{ chiffre_affaire_total|floatformat:"0" }}
+            <small><br></small>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-md-3">
+      <div class="info-box">
+        <span class="info-box-icon bg-gray"><i class="fa fa-money"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text">CA HT MOYEN</span>
+          <span class="info-box-number">
+            {{ chiffre_affaire_mensuel_moyen|floatformat:"0" }}
+            <small><br></small>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-md-3">
+      <div class="info-box">
+        <span class="info-box-icon bg-olive"><i class="fa fa-money"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text">CA HT + ELEVE</span>
+          <span class="info-box-number">
+            {{ chiffre_affaire_mensuel_plus_eleve.1|floatformat:"0" }}
+            <small><br>{{ chiffre_affaire_mensuel_plus_eleve.0 }}</small>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-md-3">
+      <div class="info-box">
+        <span class="info-box-icon bg-red"><i class="fa fa-money"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text">CA HT - ELEVE</span>
+          <span class="info-box-number">
+            {{ chiffre_affaire_mensuel_moins_eleve.1|floatformat:"0" }}
+            <small><br>{{ chiffre_affaire_mensuel_moins_eleve.0 }}</small>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="row">
+
+    <div class="col-lg-6">
+      <div class="box box-success">
+        <div class="box-header"><h3>Chiffres d'affaires mensuels</h3></div>
+        <div class="box-body">
+          <div id="poids_net_client_table">
+            <table id="table1" class="table table-bordered table-striped" cellspacing="0" width="100%">
+              <thead>
+                <tr bgcolor="#bee5eb">
+                  <th>Mois</th>
+                  <th><center>Chiffres d'Affaires </center></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for i, j in chiffres_affaires_mensuels %}
+                  <tr>
+                    <td>{{ i }}</td>
+                    <td align="right">{{ j|floatformat:"0" }}</td>
+                  </tr> 
+                {% endfor %}  
+              </tbody>            
+            </table>  
+          </div>
+        </div>
+      </div> 
+    </div>
+
+    <div class="col-lg-6">
+      <div class="box box-success">
+        <div class="box-header"><h3>Chiffres d'affaires mensuels</h3></div>
+          <div class="box-body">
+            <div id="chiffre_affaire_mensuel" style="height: 300px;">
+              
+            </div>
+          </div>
+      </div>
+    </div> 
+
+ 
+  <p><h3><center><b>TONNAGE NET</b></center></h3></p>
+  <div class="row">
+      
+    <div class="col-12 col-sm-6 col-md-3">
+      <div class="info-box">
+        <span class="info-box-icon bg-aqua"><i class="fa fa-money"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text">TONNAGE TOTAL</span>
+          <span class="info-box-number">
+            {{ tonnage_total|floatformat:"3" }} T
+            <small><br></small>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-md-3">
+      <div class="info-box">
+        <span class="info-box-icon bg-gray"><i class="fa fa-money"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text">TONNAGE MOYEN</span>
+          <span class="info-box-number">
+            {{ tonnage_mensuel_moyen|floatformat:"3" }} T
+            <small><br></small>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-md-3">
+      <div class="info-box">
+        <span class="info-box-icon bg-olive"><i class="fa fa-money"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text">TONNAGE + ELEVE</span>
+          <span class="info-box-number">
+            {{ tonnage_mensuel_plus_eleve.1|floatformat:"3" }} T
+            <small><br>{{ tonnage_mensuel_plus_eleve.0 }}</small>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-md-3">
+      <div class="info-box">
+        <span class="info-box-icon bg-red"><i class="fa fa-money"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text">TONNAGE - ELEVE</span>
+          <span class="info-box-number">
+            {{ tonnage_mensuel_moins_eleve.1|floatformat:"3" }} T
+            <small><br>{{ tonnage_mensuel_moins_eleve.0 }}</small>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="row">  
+    <div class="col-lg-6">
+      <div class="box box-success">
+        <div class="box-header"><h3>Tonnage mensuel</h3></div>
+        <div class="box-body">
+          <div id="poids_net_client_table">
+            <table id="table1" class="table table-bordered table-striped" cellspacing="0" width="100%">
+              <thead>
+                <tr bgcolor="#bee5eb">
+                  <th>Mois</th>
+                  <th><center>Poids net en Tonnes</center></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for i in tonnage_mensuel %}
+                  <tr>
+                    <td>{{ i.0 }}</td>
+                    <td align="right">{{ i.1|floatformat:"3" }}</td>
+                  </tr> 
+                {% endfor %}  
+              </tbody>            
+            </table>  
+          </div>
+        </div>
+      </div> 
+    </div>
+
+    <div class="col-lg-6">
+      <div class="box box-success">
+        <div class="box-header"><h3>Tonnage mensuel</h3></div>
+        <div class="box-body">
+          <div id="tonnage_mensuel">
+
+          </div>
+        </div>
+      </div> 
+    </div>
+  </div>
+
+
+
+  <div class="row">  
+    <div class="col-lg-6">
+      <div class="box box-success">
+        <div class="box-header"><h3>Tonnage par client</h3></div>
+        <div class="box-body">
+          <div id="poids_net_client_table">
+            <table id="table1" class="table table-bordered table-striped" cellspacing="0" width="100%">
+              <thead>
+                <tr bgcolor="#bee5eb">
+                  <th>Clients</th>
+                  <th><center>Poids net en Tonnes</center></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for i in tonnage_client_list %}
+                  <tr>
+                    <td>{{ i.0 }}</td>
+                    <td align="right">{{ i.1|floatformat:"3" }}</td>
+                  </tr> 
+                {% endfor %}  
+              </tbody>            
+            </table>  
+          </div>
+        </div>
+      </div> 
+    </div>
+
+    <div class="col-lg-6">
+      <div class="box box-success">
+        <div class="box-header"><h3>Tonnage par client</h3></div>
+        <div class="box-body">
+          <div id="tonnage_client">
+
+          </div>
+        </div>
+      </div> 
+    </div>
+  </div>
+
+  <div class="row"> 
+    <div class="col-lg-6">
+      <div class="box box-success">
+        <div class="box-header"><h3>Tonnage par produit</h3></div>
+        <div class="box-body">
+          <div id="poids_net_client_table">
+            <table id="table1" class="table table-bordered table-striped" cellspacing="0" width="100%">
+              <thead>
+                <tr bgcolor="#bee5eb">
+                  <th>Produits</th>
+                  <th><center>Poids net en Tonnes</center></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for i in tonnage_produit_list %}
+                  <tr>
+                    <td>{{ i.0 }}</td>
+                    <td align="right">{{ i.1|floatformat:"3" }}</td>
+                  </tr> 
+                {% endfor %}  
+              </tbody>            
+            </table>  
+          </div>
+        </div>
+      </div> 
+    </div> 
+
+    <div class="col-lg-6">
+      <div class="box box-primary">
+        <div class="box-header"><h3>Tonnage par produits</h3></div>
+        <div class="box-body">
+        <div id="tonnage_produit">
+          
+        </div>
+        </div>
+      </div> 
+    </div>
+  </div>
+
+
+
+  <div class="row"> 
+    <div class="col-lg-6">
+      <div class="box box-success">
+        <div class="box-header"><h3>Tonnage par Chauffeur</h3></div>
+        <div class="box-body">
+          <div id="poids_net_client_table">
+            <table id="table1" class="table table-bordered table-striped" cellspacing="0" width="100%">
+              <thead>
+                <tr bgcolor="#bee5eb">
+                  <th>Chauffeurs</th>
+                  <th><center>Poids net en Tonnes</center></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for i in tonnage_chauffeur_list %}
+                  <tr>
+                    <td>{{ i.0 }} {{ i.1 }} {{ i.2 }}</td>
+                    <td align="right">{{ i.3|floatformat:"3" }}</td>
+                  </tr> 
+                {% endfor %}  
+              </tbody>            
+            </table>  
+          </div>
+        </div>
+      </div> 
+    </div> 
+
+    <div class="col-lg-6">
+      <div class="box box-primary">
+        <div class="box-header"><h3>Tonnage par Chauffeur</h3></div>
+        <div class="box-body">
+        <div id="tonnage_chauffeur">
+          
+        </div>
+        </div>
+      </div> 
+    </div>
+  </div>
+
+
+  <div class="row"> 
+    <div class="col-lg-6">
+      <div class="box box-success">
+        <div class="box-header"><h3>Tonnage par Véhicule</h3></div>
+        <div class="box-body">
+          <div id="poids_net_client_table">
+            <table id="table1" class="table table-bordered table-striped" cellspacing="0" width="100%">
+              <thead>
+                <tr bgcolor="#bee5eb">
+                  <th>Véhicules</th>
+                  <th><center>Poids net en Tonnes</center></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for i in tonnage_vehicule_list %}
+                  <tr>
+                    <td>{{ i.0 }} {{ i.1 }}</td>
+                    <td align="right">{{ i.2|floatformat:"3" }}</td>
+                  </tr> 
+                {% endfor %}  
+              </tbody>            
+            </table>  
+          </div>
+        </div>
+      </div> 
+    </div> 
+
+    <div class="col-lg-6">
+      <div class="box box-primary">
+        <div class="box-header"><h3>Tonnage par Véhicule</h3></div>
+        <div class="box-body">
+        <div id="tonnage_vehicule">
+          
+        </div>
+        </div>
+      </div> 
+    </div>
+  </div>
+
+
+    <div class="col-lg-6">
+      <div class="box box-success">
+        <div class="box-header"></div>
+        <div class="box-body">
+          <div id="poids_net_client_table">
+            <table id="table1" class="table table-bordered table-striped" cellspacing="0" width="100%">
+              <thead>
+                <tr bgcolor="#bee5eb">
+                  <th>Dossiers</th>
+                  <th><center>Poids net en Tonnes</center></th>
+                  <th><center>Nbre de véhicules</center></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for i in cles_valeurs_dossier.items %}
+                  <tr>
+                    <td>{{ i.0 }}</td>
+                    <td align="right">{{ i.1.0|floatformat:"0" }}</td>
+                    <td align="right">{{ i.1.1|floatformat:"0" }}</td>
+                  </tr> 
+                {% endfor %}  
+              </tbody>            
+            </table>  
+          </div>
+        </div>
+      </div> 
+    </div>
+
+    <div class="col-lg-6">
+      <div class="box box-primary">
+        <div class="box-header"></div>
+        <div class="box-body">
+        <div id="meilleurs_dossiers">
+          
+        </div>
+        </div>
+      </div> 
+    </div>
+
+</div>
+
+<hr>
+
+<p><h3><center><b>CONSOMMATION DU CARBURANT</b></center></h3></p>
+  <div class="row">
+      
+    <div class="col-12 col-sm-6 col-md-3">
+      <div class="info-box">
+        <span class="info-box-icon bg-aqua"><i class="fa fa-money"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text">MONTANT TOTAL</span>
+          <span class="info-box-number">
+            {{ carburant_quantite_totale.montant_total|floatformat:"0" }}
+            <small><br></small>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-md-3">
+      <div class="info-box">
+        <span class="info-box-icon bg-gray"><i class="fa fa-money"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text">QUANTITE TOTALE</span>
+          <span class="info-box-number">
+            {{ carburant_quantite_totale.quantite_totale|floatformat:"0" }} L
+            <small><br></small>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-md-3">
+      <div class="info-box">
+        <span class="info-box-icon bg-olive"><i class="fa fa-money"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text">MT PREFINANCEMENT</span>
+          <span class="info-box-number">
+            {{ carburant_quantite_totale_enlevement.montant_total|floatformat:"0" }}
+            <small></small>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-md-3">
+      <div class="info-box">
+        <span class="info-box-icon bg-red"><i class="fa fa-money"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text">QTE PREFINANCEMENT</span>
+          <span class="info-box-number">
+            {{ carburant_quantite_totale_enlevement.quantite_totale|floatformat:"0" }} L
+            <small></small>
+          </span>
+        </div>
+      </div>
+    </div>
+ </div>
+
+  <div class="row">
+    
+    <div class="col-lg-6">
+      <div class="box box-success">
+        <div class="box-header">Préfinancements</div>
+        <div class="box-body">
+          <div id="poids_net_client_table">
+            <table id="table1" class="table table-bordered table-striped" cellspacing="0" width="100%">
+              <thead>
+                <tr bgcolor="#bee5eb">
+                  <th>Véhicules</th>
+                  <th><center>Quantité L</center></th>
+                  <th><center>% préfinancement</center></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for i, j in cles_valeurs_carburant.items %}
+                  <tr>
+                    <td>{{ i }}</td>
+                    <td align="right">{{j|floatformat:"3" }}</td>
+                    <td align="right">{{ j|div:carburant_quantite_totale_enlevement.quantite_totale|mul:100|floatformat:'2' }}%</td>
+                  </tr> 
+                {% endfor %}  
+              </tbody>            
+            </table>  
+          </div>
+        </div>
+      </div> 
+    </div>
+
+
+    <div class="col-lg-6">
+      <div class="box box-primary">
+        <div class="box-header"></div>
+        <div class="box-body">
+        <div id="carburant_prefinacement">
+          
+        </div>
+        </div>
+      </div> 
+    </div>
+
+
+<!-- 
+    <div class="col-lg-6">
+      <div class="box box-primary">
+        <div class="box-header"></div>
+        <div class="box-body">
+        <div id="vehicule_carburant_plus">
+          
+        </div>
+        </div>
+      </div> 
+    </div>
+
+    <div class="col-lg-6">
+      <div class="box box-primary">
+        <div class="box-header"></div>
+        <div class="box-body">
+        <div id="chauffeur_carburant_moins">
+          
+        </div>
+        </div>
+      </div> 
+    </div>  -->
+
+  </div>
+         
+<!-- OPTIONAL SCRIPTS -->data_tonnage
+<script src="https://code.highcharts.com/highcharts.src.js"></script>
+<script>
+  
+  Highcharts.chart('poids_net_client', {
+      chart: {
+          type: 'column'
+      },
+      title: {
+          text: 'Poids net par client'
+      },
+      xAxis: {
+          categories: {{ cles|safe }}
+      },
+      series: [{
+          name: 'Clients',
+          data: {{ valeurs|safe }}
+      }],
+  });
+
+
+  Highcharts.chart('meilleurs_produits', {
+      chart: {
+          type: 'column'
+      },
+      title: {
+          text: 'Meilleurs produits en tonnage'
+      },
+      xAxis: {
+          categories: {{ cles_marchandise|safe }}
+      },
+      series: [{
+          name: 'Produits',
+          data: {{ valeurs_marchandise|safe }}
+      }],
+  });
+
+
+  Highcharts.chart('meilleurs_chauffeurs', {
+      chart: {
+          type: 'column'
+      },
+      title: {
+          text: 'Meilleurs chauffeurs en tonnage'
+      },
+      xAxis: {
+          categories: {{ cles_chauffeur|safe }}
+      },
+      series: [{
+          name: 'chauffeurs',
+          data: {{ valeurs_chauffeur|safe }}
+      }],
+  });
+
+
+  Highcharts.chart('meilleurs_vehicules', {
+      chart: {
+          type: 'column'
+
+      },
+      title: {
+          text: 'Meilleurs véhicules en tonnage'
+      },
+      xAxis: {
+          categories: {{ cles_vehicule|safe }}
+      },
+      series: [{
+          name: 'véhicules',
+          data: {{ valeurs_vehicule|safe }}
+      }],
+  });
+
+
+  Highcharts.chart('meilleurs_dossiers', {
+      chart: {
+          type: 'column'
+      },
+      title: {
+          text: 'Tonnage par dossier et véhicule'
+      },
+      xAxis: {
+          categories: {{ cles_dossier|safe }}
+      },
+      series: [{
+          name: 'Tonnage',
+          data: {{ valeurs_tonnage_dossier|safe }}
+      },
+      {
+          name: 'Véhicules',
+          data: {{ valeurs_dossier|safe }}
+      }],
+  });
+
+
+  Highcharts.chart('carburant_prefinacement', {
+      chart: {
+          type: 'column'
+      },
+      title: {
+          text: 'Préfinancements de carburant par véhicule'
+      },
+      xAxis: {
+          categories: {{ cles_vehicule_carburant_plus|safe }}
+      },
+      series: [{
+          name: 'vehicules',
+          data: {{ valeurs_vehicule_carburant_plus|safe }}
+      }],
+  });
+
+
+
+  Highcharts.chart('vehicule_carburant_plus', {
+      chart: {
+          type: 'column'
+      },
+      title: {
+          text: 'Véhicules ayant consommés plus de carburant'
+      },
+      xAxis: {
+          categories: {{ cles_vehicule_carburant_plus|safe }}
+      },
+      series: [{
+          name: 'vehicules',
+          data: {{ valeurs_vehicule_carburant_plus|safe }}
+      }],
+  });
+
+
+  Highcharts.chart('chauffeur_carburant_moins', {
+      chart: {
+          type: 'column'
+      },
+      title: {
+          text: 'Chauffeurs ayant consommés moins de carburant'
+      },
+      xAxis: {
+          categories: {{ cles_chauffeur_carburant_moins|safe }}
+      },
+      series: [{
+          name: 'Chauffeurs',
+          data: {{ valeurs_chauffeur_carburant_moins|safe }}
+      }],
+  });
+
+
+  Highcharts.chart('container', {
+      chart: {
+          type: 'column'
+      },
+      title: {
+          text: 'Poids net par client'
+      },
+      xAxis: {
+          categories: ['Africa', 'America', 'Asia', 'Europe', 'Oceania']
+      },
+      series: [{
+          name: 'Year 1800',
+          data: [107, 31, 635, 203, 2]
+      }, {
+          name: 'Year 1900',
+          data: [133, 156, 947, 408, 6]
+      }, {
+          name: 'Year 2012',
+          data: [1052, 954, 4250, 740, 38]
+      }]
+  });
+  </script>
+  <script src="{% static 'js/jquery-3.3.1.js' %}"></script>
+  <script src="{% static 'js/Chart.min.js' %}"></script>
+</section>
+
+<script src="{% static 'js/loader.js' %}"></script>
+
+
+<script type="text/javascript">
+  google.charts.load("current", {packages:["corechart"]});
+  google.charts.setOnLoadCallback(drawChart);
+  function drawChart() {
+    var data = {{ data|safe }};
+    var data = google.visualization.arrayToDataTable(data);
+
+    var options = {
+      title:'',
+      is3D: true,
+    };
+
+    var chart = new google.visualization.ColumnChart(document.getElementById('chiffre_affaire_mensuel'));
+    chart.draw(data, options);
+}
+</script>
+
+<script type="text/javascript">
+  google.charts.load("current", {packages:["corechart"]});
+  google.charts.setOnLoadCallback(drawChart);
+  function drawChart() {
+    var data = {{ data_tonnage|safe }};
+    var data = google.visualization.arrayToDataTable(data);
+
+    var options = {
+      title:'',
+      is3D: true,
+    };
+    var chart = new google.visualization.ColumnChart(document.getElementById('tonnage_mensuel'));
+    chart.draw(data, options);
+}
+</script>
+
+
+<script type="text/javascript">
+  google.charts.load("current", {packages:["corechart"]});
+  google.charts.setOnLoadCallback(drawChart);
+  function drawChart() {
+    var data = {{ data_tonnage_client|safe }};
+    var data = google.visualization.arrayToDataTable(data);
+
+    var options = {
+      title:'',
+      is3D: true,
+    };
+    var chart = new google.visualization.ColumnChart(document.getElementById('tonnage_client'));
+    chart.draw(data, options);
+}
+</script>
+
+
+<script type="text/javascript">
+  google.charts.load("current", {packages:["corechart"]});
+  google.charts.setOnLoadCallback(drawChart);
+  function drawChart() {
+    var data = {{ data_tonnage_produit|safe }};
+    var data = google.visualization.arrayToDataTable(data);
+
+    var options = {
+      title:'',
+      is3D: true,
+    };
+    var chart = new google.visualization.ColumnChart(document.getElementById('tonnage_produit'));
+    chart.draw(data, options);
+}
+</script>
+
+<script type="text/javascript">
+  google.charts.load("current", {packages:["corechart"]});
+  google.charts.setOnLoadCallback(drawChart);
+  function drawChart() {
+    var data = {{ data_tonnage_chauffeur|safe }};
+    var data = google.visualization.arrayToDataTable(data);
+
+    var options = {
+      title:'',
+      is3D: true,
+    };
+    var chart = new google.visualization.ColumnChart(document.getElementById('tonnage_chauffeur'));
+    chart.draw(data, options);
+}
+</script>
+
+<script type="text/javascript">
+  google.charts.load("current", {packages:["corechart"]});
+  google.charts.setOnLoadCallback(drawChart);
+  function drawChart() {
+    var data = {{ data_tonnage_vehicule|safe }};
+    var data = google.visualization.arrayToDataTable(data);
+
+    var options = {
+      title:'',
+      is3D: true,
+    };
+    var chart = new google.visualization.ColumnChart(document.getElementById('tonnage_vehicule'));
+    chart.draw(data, options);
+}
+</script>
+
+
+
+
+
+
+
+
+<!-- POUR LES DATES -->
+<script src="{% static 'commande/css/bootstrap.min.css' %}"></script>
+<script src="{% static 'commande/js/bootstrap.min.js' %}"></script>
+{% endblock content %}

@@ -1,0 +1,707 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
+{% load has_group %}
+
+<!-- POUR LA DATE */-->
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+
+{% block aside %}
+  {% include "facturation/aside.html" %}        
+{% endblock aside %}  
+
+{% block content %}    
+<section class="content-header">
+<div class="row">
+  <div class="col-sm-2">
+    <h4><b>Facturation</b></h4>
+  </div>
+
+  <div class="col-sm-10">
+  <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+  {{ form.media }}
+  <form id="form" class="form-inline" method="POST" action="{#% url 'auto:contrat_lister' %#}">{% csrf_token %}
+    <div class="row">
+        <div class="form-row">
+          <table>
+            <tr>
+              <td>
+                <div class="form-group col-md-4 mb-0">
+                  {% bootstrap_form form %}
+                </div>
+              </td>
+              <td style="width: 10" align="left">
+                <!--
+                <button class="btn btn-primary pull-left" id="btn_rechercher">Rechercher  <span class="fa fa-search"></span></button>
+                 <button class="btn btn-primary" id="btn_imprimer">Imprimer  <span class="fa fa-print"></span></button>/.box-header -->
+              </td> 
+            </tr>
+          </table>
+        </div>
+      </div> 
+    </form>
+  </div>
+ </div>
+
+  <ol class="breadcrumb">
+     <a href="{% url 'facturation:facturation_creer' %}"><span class="btn btn-xs btn-primary"><span class="glyphicon glyphicon-plus"></span>  Ajouter une facture</span></a>
+   </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="box box-primary">
+        <div class="box-header"></div>
+        <div class="box-body">
+          <table id="table1" class="table table-bordered table-striped" cellspacing="0" width="100%">
+            <thead>
+              <tr bgcolor="#bee5eb">
+                <th>
+                  <select class="form-control" id='id_date'>
+                    <option value="-1">(Toutes)</option>
+                    {% for i in date_list %} 
+                     <option value="{{ i }}">{{ i }}</option>
+                    {% endfor %}  
+                  </select>
+                </th>
+                <th>
+                  <select class="form-control" id='id_etat'>
+                    <option value="-1">(Tous)</option>
+                     <option value="Emise">Emise</option>
+                     <option value="Attente">Attente</option>
+                     <option value="Soldée">Soldée</option>  
+                  </select>
+                </th>
+                <th><center></center></th> 
+                <th><center></center></th>
+                <th>
+                  <select class="form-control" id='id_client'>
+                    <option value="-1">(Tous)</option>
+                    {% for i in client_list %} 
+                     <option value="{{ i.id }}">{{ i.raison_sociale }}</option>
+                    {% endfor %}  
+                  </select>
+                </th>
+                <th><center></center></th>
+                <th><center></center></th>
+                <th><center></center></th>
+                <th><center></center></th>
+                <th><center></center></th>
+    		        <th><center></center></th>
+              </tr>
+              <tr bgcolor="#bee5eb">
+                <th><center>Date</center></th>
+                <th><center>Etat</center></th>
+                <th><center>N° Facture</center></th> 
+                <th><center>Dossier</center></th>
+                <th><center>Client</center></th>
+                <th><center>Montant HT</center></th>
+                <th><center>TVA</center></th>
+                <th><center>Montant TTC</center></th>
+                <th><center>Prélèvements</center></th>
+                <th><center>Montant net</center></th>
+                <th><center>Actions</center></th>
+              </tr>
+            </thead>
+            <tbody id="list_donnee">
+              <!--
+              context = {'facturation': facturation, 
+              'ot_list':ot_list, 
+              'enlevement_list':enlevement_list,
+              'ot_dict':ot_dict,
+              'montant_total_ht':int(montant_total_ht),
+              'montant_tva':int(montant_tva),
+              'montant_total_ttc':int(montant_total_ttc),
+              'montant_carburant':int(montant_carburant),
+              'montant_net':int(montant_net),
+              'montant_reglement':int(montant_reglement),
+              'montant_solde':solde,
+              'montant_net_lettre':chiffreLettre(montant_net),
+              'etat': etat
+              }
+              -->
+              {% for i in facturation_list %}
+                <tr>
+                  <td>{{ i.date_facture|date:"d M y" }}</td>
+                  <td>
+                    {% if i.etat_facture == 'Soldée' %}
+                      <span class="pull-left badge bg-green">{{ i.etat_facture }}</span>
+                    {% else %}
+                      <span class="pull-left badge bg-red">{{ i.etat_facture }}</span>
+                    {% endif %}
+
+                    {% if i.facture_commande.montant_carburant %}
+                      <span class="pull-left badge bg-green">C</span>
+                    {% else %}
+                      <span class="pull-left badge bg-red">N</span>
+                    {% endif %}
+                  </td>
+                  <td>{{ i.numero_facture }}</td>
+                  <td>{{ i.commande.numero_dossier }}</td>
+                  <td>{{ i.commande.client }}</td>
+                  <td align="right">{{ i.facture_commande.montant_total_ht }}</td>
+                  <td align="right">{{ i.facture_commande.montant_tva|floatformat:'0' }}</td>
+                  <td align="right">{{ i.facture_commande.montant_total_ttc|floatformat:'0' }}</td>
+                  <td align="right">{{ i.facture_commande.montant_carburant|add:i.debours|add:i.avance|floatformat:"0" }}</td>
+                  <td align="right">{{ i.facture_commande.montant_net }}</td>
+                  <td>
+                  <a href="{% url 'facturation:facturation_modifier' pk=i.id %}"><span class="btn btn-sm btn-primary"><span class="glyphicon glyphicon-pencil"></span>  Modifier</span></a>
+                  <a href="{% url 'facturation:facturation_imprimer' pk=i.id %}" target="_blank"><span class="btn btn-sm btn-success"><span class="glyphicon glyphicon-print"></span>  Facture</span></a>
+                  <a href="{% url 'facturation:facturation_imprimer_carburant' pk=i.id %}" target="_blank"><span class="btn btn-sm btn-info"><span class="glyphicon glyphicon-oil"></span>  Carburant</span></a>
+                  {% if user.is_superuser %}
+                  <button type="button"
+                          class="btn btn-danger btn-sm js-delete-facturation" data-toggle="modal" data-target="#modal-facturation"
+                          data-url="{% url 'facturation:facturation_delete' pk=i.id %}">
+                    <span class="glyphicon glyphicon-trash"></span> Supprimer
+                  </button>
+                  {% endif %}
+              	  </td>
+                </tr>
+              {% endfor %}    
+            </tbody>
+            <tfoot id='list_footer'>
+              <tr bgcolor="#bee5eb">
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td align="right"><b>Cumul</b></td>
+                <td align="right"><b>{{ foot_montant_ht|floatformat:"0" }}</b></td>
+                <td align="right"><b>{{ foot_montant_tva|floatformat:"0" }}</b></td>
+                <td align="right"><b>{{ foot_montant_ttc|floatformat:"0" }}</b></td>
+                <td align="right"><b>{{ foot_montant_avance|add:foot_montant_carburant|add:foot_montant_debours|floatformat:"0" }}</b></td>
+                <td align="right"><b>{{ foot_montant_net|floatformat:"0" }}</b></td>
+                <td></td> 
+              </tr>
+            </tfoot>
+          </table>    
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script src="{% static 'js/jquery-3.5.1.js' %}"></script>
+<script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+
+<style type="text/css">
+  th, td {
+    white-space: nowrap;
+}
+</style>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    var table1 = $('#table1').DataTable({
+      'paging'      : true,
+      'lengthChange': false,
+      "lengthMenu"  : [[15, 50, -1], [15, 50, "All"]],
+      'searching'   : true,
+      'ordering'    : false,
+      'info'        : true,
+      'autoWidth'   : true,
+      'scrollX'     : true,
+      'scrollY'     : '400',
+      'scrollCollapse' : true,  
+
+      dom: 'Bfrtip',
+      buttons: [
+          {
+            extend: 'print',
+            title: 'LISTE DES FACTURES : du ' + $("#id_periode_du").val() + ' au ' + $("#id_periode_au").val() + ' - ' + $("#id_client option:selected").text() + ' - ' + $("#id_etat option:selected").text() + ' - ' + $("#id_date option:selected").text(),
+            footer:true,
+            exportOptions: {
+              columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],              
+              format: {
+                    body: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 9 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    },
+                    footer: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 9 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    }
+                  }
+               },
+          },              
+          
+          {
+            extend: 'excelHtml5',
+            text: 'Excel',
+            title: 'LISTE DES FACTURES : du ' + $("#id_periode_du").val() + ' au ' + $("#id_periode_au").val() + ' - ' + $("#id_client option:selected").text() + ' - ' + $("#id_etat option:selected").text() + ' - ' + $("#id_date option:selected").text(),
+            footer:true,
+            exportOptions: {
+              columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],              
+              format: {
+                    body: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 9 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    },
+
+                    footer: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 9 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    }
+
+                  }
+                },
+          },
+
+      ],
+
+
+      "language": {
+        "sProcessing": "Traitement en cours ...",
+        "sLengthMenu": "Afficher _MENU_ lignes",
+        "sZeroRecords": "Aucun résultat trouvé",
+        "sEmptyTable": "Aucune donnée disponible",
+        "sInfo": "Lignes _START_ à _END_ sur _TOTAL_",
+        "sInfoEmpty": "Aucune ligne affichée",
+        "sInfoFiltered": "(Filtrer un maximum de_MAX_)",
+        "sInfoPostFix": "",
+        "sSearch": "Chercher:",
+        "sUrl": "",
+        "sInfoThousands": ",",
+        "sLoadingRecords": "Chargement...",
+        "oPaginate": {
+          "sFirst": "Premier", "sLast": "Dernier", "sNext": "Suivant", "sPrevious": "Précédent"
+      },
+        "oAria": {
+          "sSortAscending": ": Trier par ordre croissant", "sSortDescending": ": Trier par ordre décroissant"
+      }
+    }
+  });
+ });
+</script>
+<script type="text/javascript">
+
+$(function () {
+  var loadForm = function () {
+    var btn = $(this);
+    $.ajax({
+      url: btn.attr("data-url"),
+      type: 'get',
+      dataType: 'json',
+      beforeSend: function () {
+        $("#modal-facturation .modal-content").html("");
+        //$("#modal-facturation").modal("show");
+      },
+      success: function (data) {
+        $("#modal-facturation .modal-content").html(data.html_form);
+      }
+    });
+  };
+
+  var saveForm = function () {
+    var form = $(this);
+    $.ajax({
+      url: form.attr("action"),
+      data: form.serialize(),
+      type: form.attr("method"),
+      dataType: 'json',
+      success: function (data) {
+        if (data.form_is_valid) {
+          $("#facturation-table tbody").html(data.html_facturation_list);
+          $("#modal-facturation").modal("hide");
+        }
+        else {
+          $("#modal-facturation .modal-content").html(data.html_form);
+        }
+      }
+    });
+    return false;
+  };
+  /* Binding */
+  // Delete facturation
+  $("#table1").on("click", ".js-delete-facturation", loadForm);
+  //$("#modal-facturation").on("submit", ".js-facturation-delete-form", saveForm);
+});
+</script>
+
+
+<script type="text/javascript">
+  $("#id_client").change(function(){
+      var id_client = $(this).val();
+      var id_etat = $("#id_etat").val();
+      var id_date = $("#id_date").val();
+      var id_periode_du = $("#id_periode_du").val();
+      var id_periode_au = $("#id_periode_au").val();
+      var url = "facturation_lister_filtrer";
+      $.ajax({
+          url: url,
+          data: {
+            'id_client': id_client, 'id_etat': id_etat, 'id_date':id_date, 'id_periode_du':id_periode_du, 'id_periode_au':id_periode_au,
+          },
+          success: function (data) {
+            $('#table1').DataTable().destroy(); 
+            $("#list_donnee").html();
+            $("#list_donnee").html(data);
+
+            $("#list_footer").html();
+            $("#list_footer").html($("#id_html_footer").text());
+
+            var table1 = $('#table1').DataTable({
+              "scrollX": true,
+              "scrollY": "300",
+            dom: 'Bfrtip',
+            buttons: [
+          {
+            extend: 'print',
+            title: 'LISTE DES FACTURES : du ' + $("#id_periode_du").val() + ' au ' + $("#id_periode_au").val() + ' - ' + $("#id_client option:selected").text() + ' - ' + $("#id_etat option:selected").text() + ' - ' + $("#id_date option:selected").text(),
+            footer:true,
+            exportOptions: {
+              columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],              
+              format: {
+                    body: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 9 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    },
+                    footer: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 9 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    }
+                  }
+               },
+          },              
+
+
+          {
+            extend: 'excelHtml5',
+            text: 'Excel',
+            title: 'LISTE DES FACTURES : du ' + $("#id_periode_du").val() + ' au ' + $("#id_periode_au").val() + ' - ' + $("#id_client option:selected").text() + ' - ' + $("#id_etat option:selected").text() + ' - ' + $("#id_date option:selected").text(),
+            footer:true,
+            exportOptions: {
+              columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],              
+              format: {
+                    body: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 9 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    },
+                    footer: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 9 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    },
+                   }
+                },
+          },
+
+      ],
+
+        });
+      }
+    });
+  });
+
+
+  $("#id_etat").change(function(){
+      var id_client = $("#id_client").val();
+      var id_etat = $(this).val();
+      var id_date = $("#id_date").val();
+      var id_periode_du = $("#id_periode_du").val();
+      var id_periode_au = $("#id_periode_au").val();
+      var url = "facturation_lister_filtrer";
+      $.ajax({
+          url: url,
+          data: {
+            'id_client': id_client, 'id_etat': id_etat, 'id_date':id_date, 'id_periode_du':id_periode_du, 'id_periode_au':id_periode_au,
+          },
+          success: function (data) {
+            $('#table1').DataTable().destroy(); 
+            $("#list_donnee").html();
+            $("#list_donnee").html(data);
+
+            $("#list_footer").html();
+            $("#list_footer").html($("#id_html_footer").text());
+            var table1 = $('#table1').DataTable({
+              "scrollX": true,
+              "scrollY": "300",
+            dom: 'Bfrtip',
+            buttons: [
+          {
+            extend: 'print',
+            title: 'LISTE DES FACTURES : du ' + $("#id_periode_du").val() + ' au ' + $("#id_periode_au").val() + ' - ' + $("#id_client option:selected").text() + ' - ' + $("#id_etat option:selected").text() + ' - ' + $("#id_date option:selected").text(),
+            footer:true,
+            exportOptions: {
+              columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],              
+              format: {
+                    body: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 9 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    },
+                    footer: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 9 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    }
+                  }
+               },
+          },              
+
+
+          {
+            extend: 'excelHtml5',
+            text: 'Excel',
+            title: 'LISTE DES FACTURES : du ' + $("#id_periode_du").val() + ' au ' + $("#id_periode_au").val() + ' - ' + $("#id_client option:selected").text() + ' - ' + $("#id_etat option:selected").text() + ' - ' + $("#id_date option:selected").text(),
+            footer:true,
+            exportOptions: {
+              columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],              
+              format: {
+                    body: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 9 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    },
+                    footer: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 9 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    }
+
+                  }
+                },
+              },
+            ],
+          });
+        }
+      });
+    });
+
+
+  $("#id_date").change(function(){
+      var id_date = $(this).val();
+      var id_client = $("#id_client").val();
+      var id_etat = $("#id_etat").val();
+      var id_periode_du = $("#id_periode_du").val();
+      var id_periode_au = $("#id_periode_au").val();
+      var url = "facturation_lister_filtrer";
+      $.ajax({
+          url: url,
+          data: {
+            'id_client': id_client, 'id_etat': id_etat, 'id_date':id_date, 'id_periode_du':id_periode_du, 'id_periode_au':id_periode_au,
+          },
+          success: function (data) {
+            $('#table1').DataTable().destroy(); 
+            $("#list_donnee").html();
+            $("#list_donnee").html(data);
+            
+            $("#list_footer").html();
+            $("#list_footer").html($("#id_html_footer").text());
+            var table1 = $('#table1').DataTable({
+              "scrollX": true,
+              "scrollY": "300",
+            dom: 'Bfrtip',
+            buttons: [
+          {
+            extend: 'print',
+            title: 'LISTE DES FACTURES : du ' + $("#id_periode_du").val() + ' au ' + $("#id_periode_au").val() + ' - ' + $("#id_client option:selected").text() + ' - ' + $("#id_etat option:selected").text() + ' - ' + $("#id_date option:selected").text(),
+            footer:true,
+            exportOptions: {
+              columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],              
+              format: {
+                    body: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 9 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    },
+                    footer: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 9 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        }
+                      }
+                   },
+                },              
+          {
+            extend: 'excelHtml5',
+            text: 'Excel',
+            title: 'LISTE DES FACTURES : du ' + $("#id_periode_du").val() + ' au ' + $("#id_periode_au").val() + ' - ' + $("#id_client option:selected").text() + ' - ' + $("#id_etat option:selected").text() + ' - ' + $("#id_date option:selected").text(),
+            footer:true,
+            exportOptions: {
+              columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],              
+              format: {
+                    body: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 9 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    },
+                    footer: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 9 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    }
+
+                  }
+                },
+              },
+
+            ],
+
+        });
+      }
+    });
+  });
+
+
+  $("#id_periode_du").change(function(){
+      var id_periode_du = $(this).val();
+      var id_periode_au = $("#id_periode_au").val();
+      var id_date = $("#id_date").val();
+      var id_client = $("#id_client").val();
+      var id_etat = $("#id_etat").val();
+      var url = "facturation_lister_filtrer";
+      $.ajax({
+          url: url,
+          data: {
+            'id_client': id_client, 'id_etat': id_etat, 'id_date':id_date, 'id_periode_du':id_periode_du, 'id_periode_au':id_periode_au,
+          },
+          success: function (data) {
+            $('#table1').DataTable().destroy(); 
+            $("#list_donnee").html();
+            $("#list_donnee").html(data);
+            
+            $("#list_footer").html();
+            $("#list_footer").html($("#id_html_footer").text());
+            var table1 = $('#table1').DataTable({
+              "scrollX": true,
+              "scrollY": "300",
+            dom: 'Bfrtip',
+            buttons: [
+          {
+            extend: 'print',
+            title: 'LISTE DES FACTURES : du ' + $("#id_periode_du").val() + ' au ' + $("#id_periode_au").val() + ' - ' + $("#id_client option:selected").text() + ' - ' + $("#id_etat option:selected").text() + ' - ' + $("#id_date option:selected").text(),
+            footer:true,
+            exportOptions: {
+              columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],              
+              format: {
+                    body: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 9 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    },
+                    footer: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 9 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        }
+                      }
+                   },
+                },              
+          {
+            extend: 'excelHtml5',
+            text: 'Excel',
+            title: 'LISTE DES FACTURES : du ' + $("#id_periode_du").val() + ' au ' + $("#id_periode_au").val() + ' - ' + $("#id_client option:selected").text() + ' - ' + $("#id_etat option:selected").text() + ' - ' + $("#id_date option:selected").text(),
+            footer:true,
+            exportOptions: {
+              columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],              
+              format: {
+                    body: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 9 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    },
+                    footer: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 9 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    }
+
+                  }
+                },
+              },
+
+            ],
+
+        });
+      }
+    });
+  });
+
+
+  $("#id_periode_au").change(function(){
+      var id_periode_au = $(this).val();
+      var id_periode_du = $("#id_periode_du").val();
+      var id_date = $("#id_date").val();
+      var id_client = $("#id_client").val();
+      var id_etat = $("#id_etat").val();
+      var url = "facturation_lister_filtrer";
+      $.ajax({
+          url: url,
+          data: {
+            'id_client': id_client, 'id_etat': id_etat, 'id_date':id_date, 'id_periode_du':id_periode_du, 'id_periode_au':id_periode_au,
+          },
+          success: function (data) {
+            $('#table1').DataTable().destroy(); 
+            $("#list_donnee").html();
+            $("#list_donnee").html(data);
+            
+            $("#list_footer").html();
+            $("#list_footer").html($("#id_html_footer").text());
+            var table1 = $('#table1').DataTable({
+              "scrollX": true,
+              "scrollY": "300",
+            dom: 'Bfrtip',
+            buttons: [
+          {
+            extend: 'print',
+            title: 'LISTE DES FACTURES : du ' + $("#id_periode_du").val() + ' au ' + $("#id_periode_au").val() + ' - ' + $("#id_client option:selected").text() + ' - ' + $("#id_etat option:selected").text() + ' - ' + $("#id_date option:selected").text(),
+            footer:true,
+            exportOptions: {
+              columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],              
+              format: {
+                    body: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 9 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    },
+                    footer: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 9 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        }
+                      }
+                   },
+                },              
+          {
+            extend: 'excelHtml5',
+            text: 'Excel',
+            title: 'LISTE DES FACTURES : du ' + $("#id_periode_du").val() + ' au ' + $("#id_periode_au").val() + ' - ' + $("#id_client option:selected").text() + ' - ' + $("#id_etat option:selected").text() + ' - ' + $("#id_date option:selected").text(),
+            footer:true,
+            exportOptions: {
+              columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],              
+              format: {
+                    body: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 9 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    },
+                    footer: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 9 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    }
+
+                  }
+                },
+              },
+
+            ],
+
+        });
+      }
+    });
+  });
+
+</script>
+{% endblock content %}

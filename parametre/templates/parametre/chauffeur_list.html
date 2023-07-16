@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block content %}
+<section class="content-header">
+  <h1>Liste des chauffeurs<small></small></h1>
+  <ol class="breadcrumb">
+    <a href="{% url 'parametre:chauffeur_create' %}"><spam class="btn btn-xs btn-primary">Ajouter un chauffeur</spam></a>
+    <a href="{% url 'parametre:accueil' %}"><spam class="btn btn-xs btn-primary">Accueil</spam></a>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box box-primary">
+        <div class="box-header with-border">
+          <h3 class="box-title"><b></b></h3>
+        </div>
+        <div class="box-body">
+          <table id="table1" class="table table-bordered table-striped" cellspacing="0" width="100%">
+            <thead>
+              <tr bgcolor="#E67E30">
+                <th>Photo</th>
+                <th>Nom & Prénoms</th>
+                <th>Téléphone</th>
+                <th>Email</th>
+                <th>Statut</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            {% for i in object_list %}
+            <tr>
+              <td align="center">
+                {% if i.photo %}
+                  <img class="img-circle" src="{{ MEDIA_URL }}{{ i.photo.url }}" width="25"/>
+                {% endif %}
+              </td>
+              <td>{{ i.nom.upper }} {{ i.prenoms.title }}</td>
+              <td>{{ i.cellulaire }}</td>
+              <td> {% if i.email %} {{ i.email }} {% endif %}</td>
+              <td> {{ i.statut }}</td>
+              <td>
+                <a href="{% url 'parametre:chauffeur_detail' i.id %}"><spam class="btn btn-xs btn-success">Voir le détail</spam></a>
+                <a href="{% url 'parametre:chauffeur_update' i.id %}"><spam class="btn btn-xs btn-primary">Modifier</spam></a>
+                <a href="{% url 'parametre:chauffeur_delete' i.id %}"><spam class="btn btn-xs btn-danger">Supprimer</spam></a>
+              </td>
+             </tr>
+            {% endfor %}
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+  <script src="{% static 'js/jquery-3.5.1.js' %}"></script>
+  <script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+
+<style type="text/css">
+  th, td {
+    white-space: nowrap;
+}
+</style>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('#table1').DataTable({
+      'paging'      : true,
+      'lengthChange': false,
+      "lengthMenu"  : [[15, 50, -1], [15, 50, "All"]],
+      'searching'   : false,
+      'ordering'    : false,
+      'info'        : true,
+      'autoWidth'   : true,
+      'scrollX'     : true,
+      'scrollY'     : '400',
+      'scrollCollapse' : true,  
+
+      dom: 'Bfrtip',
+            buttons: ['print', 'excel', 'pdf', 'csv'
+
+      ],
+
+      "language": {
+        "sProcessing": "Traitement en cours ...",
+        "sLengthMenu": "Afficher _MENU_ lignes",
+        "sZeroRecords": "Aucun résultat trouvé",
+        "sEmptyTable": "Aucune donnée disponible",
+        "sInfo": "Lignes _START_ à _END_ sur _TOTAL_",
+        "sInfoEmpty": "Aucune ligne affichée",
+        "sInfoFiltered": "(Filtrer un maximum de_MAX_)",
+        "sInfoPostFix": "",
+        "sSearch": "Chercher:",
+        "sUrl": "",
+        "sInfoThousands": ",",
+        "sLoadingRecords": "Chargement...",
+        "oPaginate": {
+          "sFirst": "Premier", "sLast": "Dernier", "sNext": "Suivant", "sPrevious": "Précédent"
+      },
+        "oAria": {
+          "sSortAscending": ": Trier par ordre croissant", "sSortDescending": ": Trier par ordre décroissant"
+      }
+    }
+  });
+});   
+</script> 
+{% endblock %}

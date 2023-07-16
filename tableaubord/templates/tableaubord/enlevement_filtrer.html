@@ -1,0 +1,597 @@
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
+
+  <p><h3><center><b>TONNAGE NET</b></center></h3></p>
+  <div class="row">
+    <div class="col-12 col-sm-6 col-md-3">
+      <div class="info-box">
+        <span class="info-box-icon bg-aqua"><i class="fa fa-money"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text">TONNAGE TOTAL</span>
+          <span class="info-box-number">
+            {{ tonnage_total|floatformat:"3" }} T
+            <small><br></small>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-md-3">
+      <div class="info-box">
+        <span class="info-box-icon bg-gray"><i class="fa fa-money"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text">TONNAGE MOYEN</span>
+          <span class="info-box-number">
+            {{ tonnage_mensuel_moyen|floatformat:"3" }} T
+            <small><br></small>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-md-3">
+      <div class="info-box">
+        <span class="info-box-icon bg-olive"><i class="fa fa-money"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text">TONNAGE + ELEVE</span>
+          <span class="info-box-number">
+            {{ tonnage_mensuel_plus_eleve.1|floatformat:"3" }} T
+            <small><br>{{ tonnage_mensuel_plus_eleve.0 }}</small>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-md-3">
+      <div class="info-box">
+        <span class="info-box-icon bg-red"><i class="fa fa-money"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text">TONNAGE - ELEVE</span>
+          <span class="info-box-number">
+            {{ tonnage_mensuel_moins_eleve.1|floatformat:"3" }} T
+            <small><br>{{ tonnage_mensuel_moins_eleve.0 }}</small>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="row">  
+    <div class="col-lg-6">
+      <div class="box box-success">
+        <div class="box-header"><h4>Tonnage mensuel</h4></div>
+        <div class="box-body">
+          <div id="poids_net_client_table">
+            <table id="table1" class="table table-bordered table-striped" cellspacing="0" width="100%">
+              <thead>
+                <tr bgcolor="#bee5eb">
+                  <th>Mois</th>
+                  <th><center>Poids net en Tonnes</center></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for i in tonnage_mensuel %}
+                  <tr>
+                    <td>{{ i.0 }}</td>
+                    <td align="right">{{ i.1|floatformat:"3" }}</td>
+                  </tr> 
+                {% endfor %}  
+              </tbody>            
+            </table>  
+          </div>
+        </div>
+      </div> 
+    </div>
+
+    <div class="col-lg-6">
+      <div class="box box-success">
+        <div class="box-header"><h4>Tonnage mensuel</h4></div>
+        <div class="box-body">
+          <div id="tonnage_mensuel" style="width: 500px; height: 400px;">
+
+          </div>
+        </div>
+      </div> 
+    </div>
+  </div>
+
+  <div class="row">  
+    <div class="col-lg-6">
+      <div class="box box-success">
+        <div class="box-header"><h3>Tonnage par client</h3></div>
+        <div class="box-body">
+          <div id="poids_net_client_table">
+            <table id="table1" class="table table-bordered table-striped" cellspacing="0" width="100%">
+              <thead>
+                <tr bgcolor="#bee5eb">
+                  <th>Clients</th>
+                  <th><center>Poids net en Tonnes</center></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for i in tonnage_client_list %}
+                  <tr>
+                    <td>{{ i.0 }}</td>
+                    <td align="right">{{ i.1|floatformat:"3" }}</td>
+                  </tr> 
+                {% endfor %}  
+              </tbody>            
+            </table>  
+          </div>
+        </div>
+      </div> 
+    </div>
+
+    <div class="col-lg-6">
+      <div class="box box-success">
+        <div class="box-header"><h4>Tonnage par client</h4></div>
+        <div class="box-body">
+          <div id="tonnage_client">
+
+          </div>
+        </div>
+      </div> 
+    </div>
+  </div>
+
+  <div class="row"> 
+    <div class="col-lg-6">
+      <div class="box box-success">
+        <div class="box-header"><h4>Tonnage par produit</h4></div>
+        <div class="box-body">
+          <div id="poids_net_client_table">
+            <table id="table1" class="table table-bordered table-striped" cellspacing="0" width="100%">
+              <thead>
+                <tr bgcolor="#bee5eb">
+                  <th>Produits</th>
+                  <th><center>Poids net en Tonnes</center></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for i in tonnage_produit_list %}
+                  <tr>
+                    <td>{{ i.0 }}</td>
+                    <td align="right">{{ i.1|floatformat:"3" }}</td>
+                  </tr> 
+                {% endfor %}  
+              </tbody>            
+            </table>  
+          </div>
+        </div>
+      </div> 
+    </div> 
+
+    <div class="col-lg-6">
+      <div class="box box-primary">
+        <div class="box-header"><h4>Tonnage par produits</h4></div>
+        <div class="box-body">
+        <div id="tonnage_produit">
+          
+        </div>
+        </div>
+      </div> 
+    </div>
+  </div>
+
+  <div class="row"> 
+    <div class="col-lg-6">
+      <div class="box box-success">
+        <div class="box-header"><h4>Tonnage par Chauffeur</h4></div>
+        <div class="box-body">
+          <div id="poids_net_client_table">
+            <table id="table1" class="table table-bordered table-striped" cellspacing="0" width="100%">
+              <thead>
+                <tr bgcolor="#bee5eb">
+                  <th>Chauffeurs</th>
+                  <th><center>Poids net en Tonnes</center></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for i in tonnage_chauffeur_list %}
+                  <tr>
+                    <td>{{ i.0 }} {{ i.1 }} {{ i.2 }}</td>
+                    <td align="right">{{ i.3|floatformat:"3" }}</td>
+                  </tr> 
+                {% endfor %}  
+              </tbody>            
+            </table>  
+          </div>
+        </div>
+      </div> 
+    </div> 
+
+    <div class="col-lg-6">
+      <div class="box box-primary">
+        <div class="box-header"><h4>Tonnage par Chauffeur</h4></div>
+        <div class="box-body">
+        <div id="tonnage_chauffeur">
+          
+        </div>
+        </div>
+      </div> 
+    </div>
+  </div>
+
+  <div class="row"> 
+    <div class="col-lg-6">
+      <div class="box box-success">
+        <div class="box-header"><h4>Tonnage par Véhicule</h4></div>
+        <div class="box-body">
+          <div id="poids_net_client_table">
+            <table id="table1" class="table table-bordered table-striped" cellspacing="0" width="100%">
+              <thead>
+                <tr bgcolor="#bee5eb">
+                  <th>Véhicules</th>
+                  <th><center>Poids net en Tonnes</center></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for i in tonnage_vehicule_list %}
+                  <tr>
+                    <td>{{ i.0 }} {{ i.1 }}</td>
+                    <td align="right">{{ i.2|floatformat:"3" }}</td>
+                  </tr> 
+                {% endfor %}  
+              </tbody>            
+            </table>  
+          </div>
+        </div>
+      </div> 
+    </div> 
+
+    <div class="col-lg-6">
+      <div class="box box-primary">
+        <div class="box-header"><h4>Tonnage par Véhicule</h4></div>
+        <div class="box-body">
+        <div id="tonnage_vehicule">
+          
+        </div>
+        </div>
+      </div> 
+    </div>
+  </div>
+
+
+  <div class="row"> 
+    <div class="col-lg-6">
+      <div class="box box-success">
+        <div class="box-header"><h4>Tonnage par Dossier</h4></div>
+        <div class="box-body">
+          <div id="poids_net_client_table">
+            <table id="table1" class="table table-bordered table-striped" cellspacing="0" width="100%">
+              <thead>
+                <tr bgcolor="#bee5eb">
+                  <th>Dossiers</th>
+                  <th><center>Poids net en Tonnes</center></th>
+                  <th><center>Nbre véhicules</center></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for i in tonnage_dossier_list %}
+                  <tr>
+                    <td>{{ i.0 }}</td>
+                    <td align="right">{{ i.1|floatformat:"3" }}</td>
+                    <td align="center">{{ i.2 }}</td>
+                  </tr> 
+                {% endfor %}  
+              </tbody>            
+            </table>  
+          </div>
+        </div>
+      </div> 
+    </div> 
+
+    <div class="col-lg-6">
+      <div class="box box-primary">
+        <div class="box-header"><h4>Tonnage par Dossier</h4></div>
+        <div class="box-body">
+        <div id="tonnage_dossier">
+          
+        </div>
+        </div>
+      </div> 
+    </div>
+  </div>
+
+<hr>
+
+<p><h3><center><b>CONSOMMATION DU CARBURANT</b></center></h3></p>
+  <div class="row">
+      
+    <div class="col-12 col-sm-6 col-md-3">
+      <div class="info-box">
+        <span class="info-box-icon bg-aqua"><i class="fa fa-money"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text">MONTANT TOTAL</span>
+          <span class="info-box-number">
+            {{ carburant_total.montant_total|floatformat:"0" }}
+            <small><br></small>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-md-3">
+      <div class="info-box">
+        <span class="info-box-icon bg-gray"><i class="fa fa-money"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text">QUANTITE TOTALE</span>
+          <span class="info-box-number">
+            {{ carburant_total.quantite_totale|floatformat:"0" }} L
+            <small><br></small>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-md-3">
+      <div class="info-box">
+        <span class="info-box-icon bg-olive"><i class="fa fa-money"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text">MT PREFINANCEMENT</span>
+          <span class="info-box-number">
+            {{ carburant_prefinancement.montant_total|floatformat:"0" }}
+            <small></small>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-md-3">
+      <div class="info-box">
+        <span class="info-box-icon bg-red"><i class="fa fa-money"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text">QTE PREFINANCEMENT</span>
+          <span class="info-box-number">
+            {{ carburant_prefinancement.quantite_totale|floatformat:"0" }} L
+            <small></small>
+          </span>
+        </div>
+      </div>
+    </div>
+ </div>
+
+  <div class="row">
+    <div class="col-lg-6">
+      <div class="box box-success">
+        <div class="box-header"><h4>Préfinancements mensuels</h4></div>
+        <div class="box-body">
+          <div id="poids_net_client_table">
+            <table id="table1" class="table table-bordered table-striped" cellspacing="0" width="100%">
+              <thead>
+                <tr bgcolor="#bee5eb">
+                  <th>Mois</th>
+                  <th><center>Quantité L</center></th>
+                  <th><center>Montant</center></th>
+                  <th><center>%</center></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for i in quantite_mensuelle %}
+                  <tr>
+                    <td>{{ i.0 }}</td>
+                    <td align="right">{{ i.1|floatformat:"0" }}</td>
+                    <td align="right">{{ i.2|floatformat:"0" }}</td>
+                    <td align="right">{{ i.1|div:carburant_total.quantite_totale|mul:100|floatformat:'2' }}</td>
+                  </tr> 
+                {% endfor %}  
+              </tbody>            
+            </table>  
+          </div>
+        </div>
+      </div> 
+    </div>
+
+    <div class="col-lg-6">
+      <div class="box box-primary">
+        <div class="box-header"><h4>Préfinancements mensuels</h4></div>
+        <div class="box-body">
+        <div id="carburant_prefinacement" style="width: 500px; height: 400px;">
+          
+        </div>
+        </div>
+      </div> 
+    </div>
+  </div>
+         
+
+  <div class="row">
+    <div class="col-lg-6">
+      <div class="box box-success">
+        <div class="box-header"><h4>Carburant par Véhicule</h4></div>
+        <div class="box-body">
+          <div id="poids_net_client_table">
+            <table id="table1" class="table table-bordered table-striped" cellspacing="0" width="100%">
+              <thead>
+                <tr bgcolor="#bee5eb">
+                  <th>Véhicules</th>
+                  <th><center>Quantité L</center></th>
+                  <th><center>Montant</center></th>
+                  <th><center>%</center></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for i in carburant_vehicule_list %}
+                  <tr>
+                    <td>{{ i.0 }} {{ i.1 }}</td>
+                    <td align="right">{{ i.2|floatformat:"0" }}</td>
+                    <td align="right">{{ i.3|floatformat:'0' }}</td>
+                    <td align="right">{{ i.2|div:carburant_total.quantite_totale|mul:100|floatformat:'2' }}</td>
+                  </tr> 
+                {% endfor %}  
+              </tbody>            
+            </table>  
+          </div>
+        </div>
+      </div> 
+    </div>
+
+    <div class="col-lg-6">
+      <div class="box box-primary">
+        <div class="box-header"><h4>Carburant par Véhicule</h4></div>
+        <div class="box-body">
+        <div id="carburant_vehicule">
+          
+      </div>
+      </div>
+    </div> 
+  </div>
+</div>
+
+</section>
+<!-- OPTIONAL SCRIPTS -->
+
+<script src="{% static 'js/highcharts.src.js' %}"></script>
+<script src="{% static 'js/Chart.min.js' %}"></script>
+<script src="{% static 'js/loader.js' %}"></script>
+
+<script type="text/javascript">
+  google.charts.load("current", {packages:["corechart"]});
+  google.charts.setOnLoadCallback(drawChart);
+  function drawChart() {
+    var data = {{ data|safe }};
+    var data = google.visualization.arrayToDataTable(data);
+
+    var options = {
+      title:'',
+      is3D: true,
+    };
+
+    var chart = new google.visualization.ColumnChart(document.getElementById('chiffre_affaire_mensuel'));
+    chart.draw(data, options);
+}
+</script>
+
+<script type="text/javascript">
+  google.charts.load("current", {packages:["corechart"]});
+  google.charts.setOnLoadCallback(drawChart);
+  function drawChart() {
+    var data = {{ data_tonnage|safe }};
+    var data = google.visualization.arrayToDataTable(data);
+
+    var options = {
+      title:'',
+      is3D: true,
+    };
+    var chart = new google.visualization.PieChart(document.getElementById('tonnage_mensuel'));
+    chart.draw(data, options);
+}
+</script>
+
+
+<script type="text/javascript">
+  google.charts.load("current", {packages:["corechart"]});
+  google.charts.setOnLoadCallback(drawChart);
+  function drawChart() {
+    var data = {{ data_tonnage_client|safe }};
+    var data = google.visualization.arrayToDataTable(data);
+
+    var options = {
+      title:'',
+      is3D: true,
+    };
+    var chart = new google.visualization.ColumnChart(document.getElementById('tonnage_client'));
+    chart.draw(data, options);
+}
+</script>
+
+
+<script type="text/javascript">
+  google.charts.load("current", {packages:["corechart"]});
+  google.charts.setOnLoadCallback(drawChart);
+  function drawChart() {
+    var data = {{ data_tonnage_produit|safe }};
+    var data = google.visualization.arrayToDataTable(data);
+
+    var options = {
+      title:'',
+      is3D: true,
+    };
+    var chart = new google.visualization.ColumnChart(document.getElementById('tonnage_produit'));
+    chart.draw(data, options);
+}
+</script>
+
+<script type="text/javascript">
+  google.charts.load("current", {packages:["corechart"]});
+  google.charts.setOnLoadCallback(drawChart);
+  function drawChart() {
+    var data = {{ data_tonnage_chauffeur|safe }};
+    var data = google.visualization.arrayToDataTable(data);
+
+    var options = {
+      title:'',
+      is3D: true,
+    };
+    var chart = new google.visualization.BarChart(document.getElementById('tonnage_chauffeur'));
+    chart.draw(data, options);
+}
+</script>
+
+<script type="text/javascript">
+  google.charts.load("current", {packages:["corechart"]});
+  google.charts.setOnLoadCallback(drawChart);
+  function drawChart() {
+    var data = {{ data_tonnage_vehicule|safe }};
+    var data = google.visualization.arrayToDataTable(data);
+
+    var options = {
+      title:'',
+      is3D: true,
+    };
+    var chart = new google.visualization.ColumnChart(document.getElementById('tonnage_vehicule'));
+    chart.draw(data, options);
+}
+</script>
+
+<script type="text/javascript">
+  google.charts.load("current", {packages:["corechart"]});
+  google.charts.setOnLoadCallback(drawChart);
+  function drawChart() {
+    var data = {{ data_tonnage_dossier|safe }};
+    var data = google.visualization.arrayToDataTable(data);
+
+    var options = {
+      title:'',
+      is3D: true,
+    };
+    var chart = new google.visualization.ColumnChart(document.getElementById('tonnage_dossier'));
+    chart.draw(data, options);
+}
+</script>
+
+
+<script type="text/javascript">
+  google.charts.load("current", {packages:["corechart"]});
+  google.charts.setOnLoadCallback(drawChart);
+  function drawChart() {
+    var data = {{ data_quantite_carburant|safe }};
+    var data = google.visualization.arrayToDataTable(data);
+
+    var options = {
+      title:'',
+      is3D: true,
+      pieHole: 0.4,
+    };
+    var chart = new google.visualization.BarChart(document.getElementById('carburant_prefinacement'));
+    chart.draw(data, options);
+}
+</script>
+
+<script type="text/javascript">
+  google.charts.load("current", {packages:["corechart"]});
+  google.charts.setOnLoadCallback(drawChart);
+  function drawChart() {
+    var data = {{ data_quantite_vehicule|safe }};
+    var data = google.visualization.arrayToDataTable(data);
+
+    var options = {
+      title:'',
+      is3D: true,
+    };
+    var chart = new google.visualization.ColumnChart(document.getElementById('carburant_vehicule'));
+    chart.draw(data, options);
+}
+</script>

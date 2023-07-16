@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load has_group %}
+{% load crispy_forms_tags %}
+
+
+{% block content %}
+<section class="content-header">
+  <h1>Mes ventes <small></small></h1>
+  <ol class="breadcrumb">
+    <a href="{% url 'parametre:accueil' %}"><spam class="btn btn-xs btn-primary">Accueil</spam></a>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box box-primary">
+        <div class="box-header with-border">
+          <h3 class="box-title"><b></b></h3>
+        </div>
+        <div class="box-body">
+          <table id="table1" class="table table-bordered table-striped" cellspacing="0" width="100%">
+            <thead>
+              <tr bgcolor="#E67E30">
+                <th>Date</th>
+                <th>Formule</th>
+                <th>Nom & Prénoms</th>
+                {% if user.is_superuser or request.user|has_group:"Administrateur" %}
+                  <th>Téléphone</th>
+                {% endif %}
+                <th>Commune</th>
+                <th>Numéro</th>
+              </tr>
+            </thead>
+            {% for i in participant_list %}
+            <tr>
+              <td>{{ i.quand|date:"d M y" }}</td>
+              <td>{{ i.formule.prix }}</td>
+              <td>{{ i.nom }} {{ i.prenoms }}</td>
+              {% if user.is_superuser or request.user|has_group:"Administrateur" %}
+                <td>{{ i.cellulaire }}</td>
+              {% endif %}
+              <td>{{ i.commune }}</td>
+              <td>{{ i.numero_tombola }}</td>
+             </tr>
+            {% endfor %}
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+  <script src="{% static 'js/jquery-3.5.1.js' %}"></script>
+  <script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+
+<style type="text/css">
+  th, td {
+    white-space: nowrap;
+}
+</style>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('#table1').DataTable({
+      'paging'      : true,
+      'lengthChange': false,
+      "lengthMenu"  : [[15, 50, -1], [15, 50, "All"]],
+      'searching'   : false,
+      'ordering'    : false,
+      'info'        : true,
+      'autoWidth'   : true,
+      'scrollX'     : true,
+      'scrollY'     : '400',
+      'scrollCollapse' : true,  
+
+      dom: 'Bfrtip',
+            buttons: ['print', 'excel', 'pdf', 'csv'
+
+      ],
+
+      "language": {
+        "sProcessing": "Traitement en cours ...",
+        "sLengthMenu": "Afficher _MENU_ lignes",
+        "sZeroRecords": "Aucun résultat trouvé",
+        "sEmptyTable": "Aucune donnée disponible",
+        "sInfo": "Lignes _START_ à _END_ sur _TOTAL_",
+        "sInfoEmpty": "Aucune ligne affichée",
+        "sInfoFiltered": "(Filtrer un maximum de_MAX_)",
+        "sInfoPostFix": "",
+        "sSearch": "Chercher:",
+        "sUrl": "",
+        "sInfoThousands": ",",
+        "sLoadingRecords": "Chargement...",
+        "oPaginate": {
+          "sFirst": "Premier", "sLast": "Dernier", "sNext": "Suivant", "sPrevious": "Précédent"
+      },
+        "oAria": {
+          "sSortAscending": ": Trier par ordre croissant", "sSortDescending": ": Trier par ordre décroissant"
+      }
+    }
+  });
+});   
+</script> 
+{% endblock %}

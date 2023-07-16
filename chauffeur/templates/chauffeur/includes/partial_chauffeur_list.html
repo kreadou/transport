@@ -1,0 +1,32 @@
+{% for chauffeur in chauffeurs %}
+  <tr>
+    <td>
+      {% if chauffeur.photo %}
+      <center><img class="img-circle" src="{{ MEDIA_URL }}{{ chauffeur.photo.url }}" width= "30", heigth="30"></center>
+      {% endif %}
+    </td>
+    <td>{{ chauffeur.type_chauffeur }}</td>
+    <td>{{ chauffeur.statut }}</td>
+    <td>{{ chauffeur.nom.upper }} {{ chauffeur.prenoms.title }} </td>
+    <td>{{ chauffeur.cellulaire }}</td>
+    <td>{{ chauffeur.email }}</td>
+    <td>{{ chauffeur.date_entree|date:"d M y" }}</td>
+
+    <td style="width:200px">
+      <button type="button"
+              class="btn btn-warning btn-sm js-update-chauffeur" data-toggle="modal" data-target="#modal-chauffeur"
+              data-url="{% url 'chauffeur:chauffeur_update' chauffeur.id %}">
+        <span class="glyphicon glyphicon-pencil"></span> Modifier
+      </button>
+      <button type="button"
+              class="btn btn-danger btn-sm js-delete-chauffeur" data-toggle="modal" data-target="#modal-chauffeur"
+              data-url="{% url 'chauffeur:chauffeur_delete' chauffeur.id %}">
+        <span class="glyphicon glyphicon-trash"></span> Supprimer
+      </button>
+    </td>
+  </tr>
+{% empty %}
+  <tr>
+    <td colspan="8" class="text-center bg-warning">No chauffeur</td>
+  </tr>
+{% endfor %}

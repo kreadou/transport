@@ -1,0 +1,28 @@
+{% for entretien in entretiens %}
+  <tr>
+    <td>{{ entretien.date_entretien_debut|date:"d M y" }}</td>
+    <td>{{ entretien.date_entretien_prochain|date:"d M y" }}</td>
+    <td>{{ entretien.type_entretien }}</td>
+    <td>{{ entretien.vehicule.immatriculation }}</td>
+    <td>{{ entretien.kilometrage }}</td>
+    <td align="right">{{ entretien.montant }}</td>
+
+
+    <td style="width:200px">
+      <button type="button"
+              class="btn btn-warning btn-sm js-update-entretien" data-toggle="modal" data-target="#modal-entretien"
+              data-url="{% url 'entretien:entretien_update' entretien.id %}">
+        <span class="glyphicon glyphicon-pencil"></span> Modifier
+      </button>
+      <button type="button"
+              class="btn btn-danger btn-sm js-delete-entretien" data-toggle="modal" data-target="#modal-entretien"
+              data-url="{% url 'entretien:entretien_delete' entretien.id %}">
+        <span class="glyphicon glyphicon-trash"></span> Supprimer
+      </button>
+    </td>
+  </tr>
+{% empty %}
+  <tr>
+    <td colspan="8" class="text-center bg-warning">No entretien</td>
+  </tr>
+{% endfor %}

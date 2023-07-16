@@ -1,0 +1,47 @@
+{% load static %}
+
+  <!-- Left side column. contains the logo and sidebar -->
+  <aside class="main-sidebar">
+    <!-- sidebar: style can be found in sidebar.less -->
+    <section class="sidebar">
+      <!-- Sidebar user panel -->
+      <div class="user-panel">
+        <div class="pull-left image">
+          <img src="{{ MEDIA_URL }}{{ user.profil.photo.url }}" class="img-circle" alt="User Image">
+        </div>
+        <div class="pull-left info">
+          <p>{{ user.last_name }}</p>
+          <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
+          <p><small>{{ user.profil.fonction }}</small></p>
+        </div>
+      </div>
+
+      <!-- sidebar menu: : style can be found in sidebar.less -->
+      <ul class="sidebar-menu">
+        <li class="header" style="color:orange"><center><h4>PARAMETRES</h4></center></li>
+        <li class="active treeview">
+          <a href="#">
+            <i class="fa fa-dashboard"></i> <span>Menu des paramètres</span> <i class="fa fa-angle-left pull-right"></i>
+          </a>
+          <ul class="treeview-menu">
+            <li class="active"><a href="{% url 'parametre:commune' %}"><i class="fa fa-table"></i> Source ou Dest. des Trajets</a></li>            
+            <li class="active"><a href="{% url 'parametre:trajet' %}"><i class="fa fa-table"></i> Trajets ou Itinéraires</a></li>
+            <li class="active"><a href="{% url 'parametre:marchandise' %}"><i class="fa fa-table"></i> Marchanises ou Services</a></li>
+            <li class="header"></li>
+            <li class="active"><a href="{% url 'parametre:fournisseur' %}"><i class="fa fa-table"></i> Fournisseurs</a></li>
+            <li class="header"></li>
+            <li class="active"><a href="{% url 'parametre:ville' %}"><i class="fa fa-table"></i> Villes</a></li>
+            <li class="active"><a href="{% url 'parametre:departement' %}"><i class="fa fa-table"></i> Départements</a></li>
+            <li class="active"><a href="{% url 'parametre:region' %}"><i class="fa fa-table"></i> Régions</a></li>
+            <li class="active"><a href="{% url 'parametre:pays' %}"><i class="fa fa-table"></i> Pays</a></li>
+            <li class="active"><a href="{% url 'parametre:continent' %}"><i class="fa fa-table"></i> Continents</a></li>
+            <li class="header"></li>
+            <li class="active"><a href="{% url 'parametre:profession' %}"><i class="fa fa-table"></i> Professions</a></li>
+            <li class="active"><a href="{% url 'parametre:fonction' %}"><i class="fa fa-table"></i> Fonctions</a></li>
+          </ul>
+        </li>
+        <li class="header"></li>
+      </ul>
+    </section>
+    <!-- /.sidebar -->
+  </aside>

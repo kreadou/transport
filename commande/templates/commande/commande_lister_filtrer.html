@@ -1,0 +1,30 @@
+{% load static %}
+{% load mathfilters %}
+
+
+{% if commande_list %}
+  {% for i in commande_list %}
+    <tr>
+      <td>{{ i.date_commande|date:"d M y" }}</td>
+      <td>{{ i.numero_commande }}</td>
+      <td>{{ i.numero_dossier }}</td>
+      <td>{{ i.client }}</td>
+      <td>{{ i.navire }}</td>
+      <td align="right">{{ i.montant_commande|floatformat:"0" }}</td>
+      <td>{{ i.mode_tarification }}</td>
+      <td><a href="{% url 'detailscommande:detailscommande_lister' i.id %}">{{ i.detailscommande_set.all|length }} Itinéraire(s)</a></td>
+      <td>
+        <a href="{% url 'commande:commande_modifier' pk=i.id %}"><span class="btn btn-sm btn-primary"><span class="glyphicon glyphicon-pencil"></span>  Modifier</span></a>
+        <a href="{% url 'commande:commande_imprimer' pk=i.id %}" target="_blank"><span class="btn btn-sm btn-success glyphicon glyphicon-print"> Imprimer</span></a>
+        <button type="button"
+                class="btn btn-danger btn-sm js-delete-commande" data-toggle="modal" data-target="#modal-commande"
+                data-url="{% url 'commande:commande_delete' pk=i.id %}">
+          <span class="glyphicon glyphicon-trash"></span> Supprimer
+        </button>
+        <span class="btn btn-xs btn-primary" id="id_montant" style="display: none;">{{ montant_total|floatformat:"0" }}</span>
+      </td>
+    </tr>
+  {% endfor %}    
+{% else %}
+  <span class="btn btn-xs btn-primary" id="id_montant" style="display: none;">{{ montant_total|floatformat:"0" }}</span>
+{% endif %}

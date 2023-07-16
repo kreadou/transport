@@ -1,0 +1,1217 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
+
+<!-- POUR LA DATE */-->
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+
+{% block aside %}
+  {% include "commande/aside.html" %}        
+{% endblock aside %}  
+
+{% block content %}    
+<section class="content-header">
+  <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+  {{ form.media }}
+  <div class="row">
+    <div class="col-sm-12">
+      <form id="form" class="form-inline" method="POST" action="{#% url 'auto:contrat_lister' %#}">{% csrf_token %}
+      <b>Commandes</b>
+      {% bootstrap_form form %} 
+      </form>
+    </div>
+  </div>
+
+  <ol class="breadcrumb">
+    <a href="{% url 'commande:commande_creer' %}"><span class="btn btn-xs btn-primary"><span class="glyphicon glyphicon-plus"></span>  Ajouter une commande</span></a>
+  </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="box box-primary">
+        <div class="box-header"></div>
+        <div class="box-body">
+          <table id="table1" class="table table-bordered table-striped" cellspacing="0" width="100%">
+            <thead>
+              <tr bgcolor="#bee5eb">
+                <th></th>
+                <th></th>
+                <th></th>               
+                <th>
+                  <select class="form-control" id='id_client'>
+                    <option value="-1">(Tous)</option>
+                    {% for i in client_list %} 
+                     <option value="{{ i.id }}">{{ i.raison_sociale }}</option>
+                    {% endfor %}  
+                  </select>
+                </th>
+                <th>
+                  <select class="form-control" id='id_navire'>
+                    <option value="-1">(Tous)</option>
+                    {% for i in navire_list %} 
+                     <option value="{{ i }}">{{ i }}</option>
+                    {% endfor %}  
+                  </select>
+                </th>
+                <th></th> 
+                <th>
+                  <select class="form-control" id='id_tarification'>
+                    <option value="-1">(Toutes)</option>
+                     <option value="Tonnage">Tonnage</option>
+                     <option value="Kilométrage">Kilométrage</option>
+                     <option value="Trajet">Trajet</option>
+                     <option value="Autre">Autre</option>
+                  </select>
+                </th>    
+                <th></th>
+                <th></th>     
+              </tr>
+              <tr bgcolor="#bee5eb">
+                <th><center>Date</center></th>
+                <th><center>N°BC</center></th>
+                <th><center>Dossier</center></th>
+                <th><center>Client</center></th>
+                <th><center>Navire</center></th>
+                <th><center>Montant</center></th>                  
+                <th><center>Tarification</center></th>
+                <th><center>Itinéraires</center></th>
+                <th><center>Actions</center></th>
+              </tr>
+            </thead>
+          
+            <tbody id="list_donnee">
+              {% for i in commande_list %}
+                <tr>
+                  <td>{{ i.date_commande|date:"d M y" }}</td>
+                  <td>{{ i.numero_commande }}</td>
+                  <td>{{ i.numero_dossier }}</td>
+                  <td>{{ i.client }}</td>
+                  <td>{{ i.navire }}</td>
+                  <td align="right">{{ i.montant_commande|floatformat:"0" }}</td>
+                  <td>{{ i.mode_tarification }}</td>
+                  <td><a href="{% url 'detailscommande:detailscommande_lister' i.id %}">{{ i.detailscommande_set.all|length }} Itinéraire(s)</a></td>
+                  <td>
+                    <a href="{% url 'commande:commande_modifier' pk=i.id %}"><span class="btn btn-sm btn-primary"><span class="glyphicon glyphicon-pencil"></span>  Modifier</span></a>
+                    <a href="{% url 'commande:commande_imprimer' pk=i.id %}" target="_blank"><span class="btn btn-sm btn-success"> <span class="glyphicon glyphicon-print"></span>  Imprimer</span></a>
+                    <button type="button"
+                            class="btn btn-danger btn-sm js-delete-commande" data-toggle="modal" data-target="#modal-commande"
+                            data-url="{% url 'commande:commande_delete' pk=i.id %}">
+                      <span class="glyphicon glyphicon-trash"></span>  Supprimer
+                    </button>
+                  </td>
+                </tr>
+              {% endfor %}    
+            </tbody>
+            <tfoot>
+              <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td align="right">Motant total</td>
+                <td align="right" id="list_footer">{{ montant_total|floatformat:"0" }}</td>                
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="{% static 'js/jquery-3.5.1.js' %}"></script>
+<script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/datatables-buttons-excel-styles@1.2.0/js/buttons.html5.styles.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/datatables-buttons-excel-styles@1.2.0/js/buttons.html5.styles.templates.min.js"></script>
+
+<style type="text/css">
+  th, td {
+    white-space: nowrap;
+}
+</style>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    var table1 = $('#table1').DataTable({
+              "scrollX": true,
+              "scrollY": "300",
+            dom: 'Bfrtip',
+            buttons: [
+          {
+            extend: 'print',
+            title: 'LISTE DES COMMANDES : du ' + $("#id_periode_du").val() + ' au '+ $("#id_periode_au").val() + ' - '+ $("#id_client option:selected").text() + ' - ' + $("#id_navire option:selected").text() + ' - ' + $("#id_tarification option:selected").text(),
+            footer:true,
+            exportOptions: {
+              columns: [ 0, 1, 2, 3, 4, 5, 6, 7],              
+              format: {
+                    body: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    },
+                    footer: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    }
+                  }
+               },
+          },              
+
+
+          {
+            extend: 'excel',              // Extend the excel button
+            excelStyles: [                      // Add an excelStyles definition
+                {                 
+                    template: 'green_medium',   // Apply the 'green_medium' template
+                },
+                {
+                    cells: 'sh',                // Use Smart References (s) to target the header row (h)
+                    style: {                    // The style definition
+                        font: {                 // Style the font
+                            size: 14,           // Size 14
+                            b: false,           // Turn off the default bolding of the header row
+                        },
+                        fill: {                 // Style the cell fill
+                            pattern: {          // Add a pattern (default is solid)
+                                color: '1C3144' // Define the fill color
+                            }
+                          }
+                        }
+                      }
+                ],                            
+        
+            text: 'Excel',
+            title: 'LISTE DES COMMANDES : du ' + $("#id_periode_du").val() + ' au '+ $("#id_periode_au").val() + ' - '+ $("#id_client option:selected").text() + ' - ' + $("#id_navire option:selected").text() + ' - ' + $("#id_tarification option:selected").text(),
+            footer:true,
+            exportOptions: {
+              columns: [ 0, 1, 2, 3, 4, 5, 6, 7],  
+              
+
+
+              format: {
+                    body: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    },
+
+                    footer: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    }
+
+                  }
+                },
+          },
+
+      ],
+
+
+      "language": {
+        "sProcessing": "Traitement en cours ...",
+        "sLengthMenu": "Afficher _MENU_ lignes",
+        "sZeroRecords": "Aucun résultat trouvé",
+        "sEmptyTable": "Aucune donnée disponible",
+        "sInfo": "Lignes _START_ à _END_ sur _TOTAL_",
+        "sInfoEmpty": "Aucune ligne affichée",
+        "sInfoFiltered": "(Filtrer un maximum de_MAX_)",
+        "sInfoPostFix": "",
+        "sSearch": "Chercher:",
+        "sUrl": "",
+        "sInfoThousands": ",",
+        "sLoadingRecords": "Chargement...",
+        "oPaginate": {
+          "sFirst": "Premier", "sLast": "Dernier", "sNext": "Suivant", "sPrevious": "Précédent"
+      },
+        "oAria": {
+          "sSortAscending": ": Trier par ordre croissant", "sSortDescending": ": Trier par ordre décroissant"
+      }
+    }
+  });
+
+
+
+  $("#id_client").change(function(){
+      var id_client = $(this).val();
+      var id_navire = $("#id_navire").val();
+      var id_tarification = $("#id_tarification").val();
+      var id_periode_du = $("#id_periode_du").val();
+      var id_periode_au =  $("#id_periode_au").val();
+      var url = "commande_filtrer";
+      $.ajax({
+          url: url,
+          data: {
+            'id_client': id_client, 'id_navire': id_navire, 'id_tarification':id_tarification,
+            'id_periode_du':id_periode_du, 'id_periode_au':id_periode_au
+          },
+          success: function (data) {
+            $('#table1').DataTable().destroy(); 
+            $("#list_donnee").html();
+            $("#list_donnee").html(data);
+
+            $("#list_footer").html($("#id_montant").text());
+
+            $('#table1').DataTable({
+              "scrollX": true,
+              "scrollY": "300",
+            dom: 'Bfrtip',
+            buttons: [
+          {
+            extend: 'print',
+            title: 'LISTE DES COMMANDES : du ' + $("#id_periode_du").val() + ' au '+ $("#id_periode_au").val() + ' - '+ $("#id_client option:selected").text() + ' - ' + $("#id_navire option:selected").text() + ' - ' + $("#id_tarification option:selected").text(),
+            footer:true,
+            exportOptions: {
+              columns: [ 0, 1, 2, 3, 4, 5, 6, 7],              
+              format: {
+                    body: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    },
+                    footer: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    }
+                  }
+               },
+          },              
+
+
+          {
+            extend: 'excelHtml5',
+            text: 'Excel',
+            title: 'LISTE DES COMMANDES : du ' + $("#id_periode_du").val() + ' au '+ $("#id_periode_au").val() + ' - '+ $("#id_client option:selected").text() + ' - ' + $("#id_navire option:selected").text() + ' - ' + $("#id_tarification option:selected").text(),
+            footer:true,
+            exportOptions: {
+              columns: [ 0, 1, 2, 3, 4, 5, 6, 7],              
+              format: {
+                    body: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    },
+
+                    footer: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    }
+
+                  }
+                },
+          },
+
+      ],
+
+        });
+      }
+    });
+  });
+
+
+  $("#id_navire").change(function(){
+      var id_client = $("#id_client").val();
+      var id_navire = $(this).val();
+      var id_tarification = $("#id_tarification").val();
+      var id_periode_du = $("#id_periode_du").val();
+      var id_periode_au =  $("#id_periode_au").val();
+      var url = "commande_filtrer";
+      $.ajax({
+          url: url,
+          data: {
+            'id_client': id_client, 'id_navire': id_navire, 'id_tarification':id_tarification,
+            'id_periode_du':id_periode_du, 'id_periode_au':id_periode_au
+          },
+          success: function (data) {
+            $('#table1').DataTable().destroy(); 
+            $("#list_donnee").html();
+            $("#list_donnee").html(data);
+
+            $("#list_footer").html($("#id_montant").text());
+            $('#table1').DataTable({
+              "scrollX": true,
+              "scrollY": "300",
+            dom: 'Bfrtip',
+            buttons: [
+          {
+            extend: 'print',
+            title: 'LISTE DES COMMANDES : du ' + $("#id_periode_du").val() + ' au '+ $("#id_periode_au").val() + ' - '+ $("#id_client option:selected").text() + ' - ' + $("#id_navire option:selected").text() + ' - ' + $("#id_tarification option:selected").text(),
+            footer:true,
+            exportOptions: {
+              columns: [ 0, 1, 2, 3, 4, 5, 6, 7],              
+              format: {
+                    body: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    },
+                    footer: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    }
+                  }
+               },
+          },              
+
+
+          {
+            extend: 'excelHtml5',
+            text: 'Excel',
+            title: 'LISTE DES COMMANDES : du ' + $("#id_periode_du").val() + ' au '+ $("#id_periode_au").val() + ' - '+ $("#id_client option:selected").text() + ' - ' + $("#id_navire option:selected").text() + ' - ' + $("#id_tarification option:selected").text(),
+            footer:true,
+            exportOptions: {
+              columns: [ 0, 1, 2, 3, 4, 5, 6, 7],              
+              format: {
+                    body: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    },
+
+                    footer: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    }
+
+                  }
+                },
+          },
+
+      ],
+
+        });
+      }
+    });
+  });
+
+
+  $("#id_tarification").change(function(){
+      var id_tarification = $(this).val();
+      var id_client = $("#id_client").val();
+      var id_navire = $("#id_navire").val();
+      var id_periode_du = $("#id_periode_du").val();
+      var id_periode_au =  $("#id_periode_au").val();
+      var url = "commande_filtrer";
+      $.ajax({
+          url: url,
+          data: {
+            'id_client': id_client, 'id_navire': id_navire, 'id_tarification':id_tarification,
+            'id_periode_du':id_periode_du, 'id_periode_au':id_periode_au
+          },
+          success: function (data) {
+            $('#table1').DataTable().destroy(); 
+            $("#list_donnee").html();
+            $("#list_donnee").html(data);
+            
+            $("#list_footer").html($("#id_montant").text());
+            $('#table1').DataTable({
+              "scrollX": true,
+              "scrollY": "300",
+            dom: 'Bfrtip',
+            buttons: [
+          {
+            extend: 'print',
+            title: 'LISTE DES COMMANDES : du ' + $("#id_periode_du").val() + ' au '+ $("#id_periode_au").val() + ' - '+ $("#id_client option:selected").text() + ' - ' + $("#id_navire option:selected").text() + ' - ' + $("#id_tarification option:selected").text(),
+            footer:true,
+            exportOptions: {
+              columns: [ 0, 1, 2, 3, 4, 5, 6, 7],              
+              format: {
+                    body: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    },
+                    footer: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    }
+                  }
+               },
+          },              
+
+
+          {
+            extend: 'excelHtml5',
+            text: 'Excel',
+            title: 'LISTE DES COMMANDES : du ' + $("#id_periode_du").val() + ' au '+ $("#id_periode_au").val() + ' - '+ $("#id_client option:selected").text() + ' - ' + $("#id_navire option:selected").text() + ' - ' + $("#id_tarification option:selected").text(),
+            footer:true,
+            exportOptions: {
+              columns: [ 0, 1, 2, 3, 4, 5, 6, 7],              
+              format: {
+                    body: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    },
+
+                    footer: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    }
+
+                  }
+                },
+          },
+
+      ],
+
+        });
+      }
+    });
+  });
+
+
+  $("#id_periode_du").change(function(){
+      var id_periode_du = $(this).val();
+      var id_tarification = $("#id_tarification").val();
+      var id_client = $("#id_client").val();
+      var id_navire = $("#id_navire").val();
+      var id_periode_au =  $("#id_periode_au").val();
+      var url = "commande_filtrer";
+      $.ajax({
+          url: url,
+          data: {
+            'id_client': id_client, 'id_navire': id_navire, 'id_tarification':id_tarification,
+            'id_periode_du':id_periode_du, 'id_periode_au':id_periode_au
+          },
+          success: function (data) {
+            $('#table1').DataTable().destroy(); 
+            $("#list_donnee").html();
+            $("#list_donnee").html(data);
+            
+            $("#list_footer").html($("#id_montant").text());
+            $('#table1').DataTable({
+              "scrollX": true,
+              "scrollY": "300",
+            dom: 'Bfrtip',
+            buttons: [
+          {
+            extend: 'print',
+            title: 'LISTE DES COMMANDES : du ' + $("#id_periode_du").val() + ' au '+ $("#id_periode_au").val() + ' - '+ $("#id_client option:selected").text() + ' - ' + $("#id_navire option:selected").text() + ' - ' + $("#id_tarification option:selected").text(),
+            footer:true,
+            exportOptions: {
+              columns: [ 0, 1, 2, 3, 4, 5, 6, 7],              
+              format: {
+                    body: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    },
+                    footer: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    }
+                  }
+               },
+          },              
+
+
+          {
+            extend: 'excelHtml5',
+            text: 'Excel',
+            title: 'LISTE DES COMMANDES : du ' + $("#id_periode_du").val() + ' au '+ $("#id_periode_au").val() + ' - '+ $("#id_client option:selected").text() + ' - ' + $("#id_navire option:selected").text() + ' - ' + $("#id_tarification option:selected").text(),
+            footer:true,
+            exportOptions: {
+              columns: [ 0, 1, 2, 3, 4, 5, 6, 7],              
+              format: {
+                    body: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    },
+
+                    footer: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    }
+
+                  }
+                },
+          },
+
+      ],
+
+        });
+      }
+    });
+  });
+
+
+  $("#id_periode_au").change(function(){
+      var id_periode_au = $(this).val();
+      var id_tarification = $("#id_tarification").val();
+      var id_client = $("#id_client").val();
+      var id_navire = $("#id_navire").val();
+      var id_periode_du =  $("#id_periode_du").val();
+      var url = "commande_filtrer";
+      $.ajax({
+          url: url,
+          data: {
+            'id_client': id_client, 'id_navire': id_navire, 'id_tarification':id_tarification,
+            'id_periode_du':id_periode_du, 'id_periode_au':id_periode_au
+          },
+          success: function (data) {
+            $('#table1').DataTable().destroy(); 
+            $("#list_donnee").html();
+            $("#list_donnee").html(data);
+            
+            $("#list_footer").html($("#id_montant").text());
+            $('#table1').DataTable({
+              "scrollX": true,
+              "scrollY": "300",
+            dom: 'Bfrtip',
+            buttons: [
+          {
+            extend: 'print',
+            title: 'LISTE DES COMMANDES : du ' + $("#id_periode_du").val() + ' au '+ $("#id_periode_au").val() + ' - '+ $("#id_client option:selected").text() + ' - ' + $("#id_navire option:selected").text() + ' - ' + $("#id_tarification option:selected").text(),
+            footer:true,
+            exportOptions: {
+              columns: [ 0, 1, 2, 3, 4, 5, 6, 7],              
+              format: {
+                    body: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    },
+                    footer: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    }
+                  }
+               },
+          },              
+
+
+          {
+            extend: 'excelHtml5',
+            text: 'Excel',
+            title: 'LISTE DES COMMANDES : du ' + $("#id_periode_du").val() + ' au '+ $("#id_periode_au").val() + ' - '+ $("#id_client option:selected").text() + ' - ' + $("#id_navire option:selected").text() + ' - ' + $("#id_tarification option:selected").text(),
+            footer:true,
+            exportOptions: {
+              columns: [ 0, 1, 2, 3, 4, 5, 6, 7],              
+              format: {
+                    body: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    },
+
+                    footer: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    }
+
+                  }
+                },
+          },
+        ],
+
+      });
+      }
+    });
+  });
+
+});
+</script>
+{% endblock content %}
+
+
+{% comment %}
+<html>
+  <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/css/bootstrap.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">
+  </head>
+  <body>
+    <div class="container">
+      <div class="content">
+        <div class="row">
+          <div class="col-8">
+            <div class="filter-wrapper">
+              <input type="checkbox" class="filter-checkbox" value="Software Engineer"/> Software Engineer
+              <input type="checkbox" class="filter-checkbox" value="Accountant"/>  Accountant
+              <input type="checkbox" class="filter-checkbox" value="Sales Assistant"/>  Sales Assistant
+              <input type="checkbox" class="filter-checkbox" value="Developer"/>  Developer
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="btn-group submitter-group float-right">
+              <div class="input-group-prepend">
+                <div class="input-group-text">Status</div>
+              </div>
+              <select class="form-control status-dropdown">
+                <option value="">All</option>
+                <option value="DRF">Draft</option>
+                <option value="PCH">Pending Review</option>
+                <option value="PAU">Pending Authorisation</option>
+                <option value="Received">Received</option>
+                <option value="Processing">Processing</option>
+                <option value="Query">Query</option>
+                <option value="Approved">Approved</option>
+                <option value="Rejected">Rejected</option>
+                <option value="Amended">Amended</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <table id="example" class="table">
+        <thead>
+          <tr>
+            <td>Yuri Berry</td>
+            <td>Chief Marketing Officer (CMO)</td>
+            <td>New York</td>
+            <td>40</td>
+            <td>2009/06/25</td>
+            <td>$675,000</td>
+            <td>
+              <div class="badge status-badge badge-info">
+                Draft
+              </div>
+            </td>
+            <td>DRF</td>
+          </tr>
+          <tr>
+            <td>Caesar Vance</td>
+            <td>Pre-Sales Support</td>
+            <td>New York</td>
+            <td>21</td>
+            <td>2011/12/12</td>
+            <td>$106,450</td>
+            <td>
+              <div class="badge status-badge badge-info">
+                Draft
+              </div>
+            </td>
+            <td>DRF</td>
+          </tr>
+          <tr>
+            <td>Doris Wilder</td>
+            <td>Sales Assistant</td>
+            <td>Sidney</td>
+            <td>23</td>
+            <td>2010/09/20</td>
+            <td>$85,600</td>
+            <td>
+              <div class="badge status-badge badge-info">
+                Draft
+              </div>
+            </td>
+            <td>DRF</td>
+          </tr>
+          <tr>
+            <td>Angelica Ramos</td>
+            <td>Chief Executive Officer (CEO)</td>
+            <td>London</td>
+            <td>47</td>
+            <td>2009/10/09</td>
+            <td>$1,200,000</td>
+            <td>
+              <div class="badge status-badge badge-info">
+                Draft
+              </div>
+            </td>
+            <td>DRF</td>
+          </tr>
+          <tr>
+            <td>Gavin Joyce</td>
+            <td>Developer</td>
+            <td>Edinburgh</td>
+            <td>42</td>
+            <td>2010/12/22</td>
+            <td>$92,575</td>
+            <td>
+              <div class="badge status-badge badge-info">
+                Draft
+              </div>
+            </td>
+            <td>DRF</td>
+          </tr>
+          <tr>
+            <td>Jennifer Chang</td>
+            <td>Regional Director</td>
+            <td>Singapore</td>
+            <td>28</td>
+            <td>2010/11/14</td>
+            <td>$357,650</td>
+            <td>
+              <div class="badge status-badge badge-info">
+                Draft
+              </div>
+            </td>
+            <td>DRF</td>
+          </tr>
+          <tr>
+            <td>Brenden Wagner</td>
+            <td>Software Engineer</td>
+            <td>San Francisco</td>
+            <td>28</td>
+            <td>2011/06/07</td>
+            <td>$206,850</td>
+            <td>
+              <div class="badge status-badge badge-info">
+                Draft
+              </div>
+            </td>
+            <td>DRF</td>
+          </tr>
+          <tr>
+            <td>Fiona Green</td>
+            <td>Chief Operating Officer (COO)</td>
+            <td>San Francisco</td>
+            <td>48</td>
+            <td>2010/03/11</td>
+            <td>$850,000</td>
+            <td>
+              <div class="badge status-badge badge-info">
+                Draft
+              </div>
+            </td>
+            <td>DRF</td>
+          </tr>
+          <tr>
+            <td>Shou Itou</td>
+            <td>Regional Marketing</td>
+            <td>Tokyo</td>
+            <td>20</td>
+            <td>2011/08/14</td>
+            <td>$163,000</td>
+            <td>
+              <div class="badge status-badge badge-info">
+                Draft
+              </div>
+            </td>
+            <td>DRF</td>
+          </tr>
+          <tr>
+            <td>Michelle House</td>
+            <td>Integration Specialist</td>
+            <td>Sidney</td>
+            <td>37</td>
+            <td>2011/06/02</td>
+            <td>$95,400</td>
+            <td>
+              <div class="badge status-badge badge-info">
+                Draft
+              </div>
+            </td>
+            <td>DRF</td>
+          </tr>
+          <tr>
+            <td>Suki Burks</td>
+            <td>Developer</td>
+            <td>London</td>
+            <td>53</td>
+            <td>2009/10/22</td>
+            <td>$114,500</td>
+            <td>
+              <div class="badge status-badge badge-info">
+                Draft
+              </div>
+            </td>
+            <td>DRF</td>
+          </tr>
+          <tr>
+            <td>Prescott Bartlett</td>
+            <td>Technical Author</td>
+            <td>London</td>
+            <td>27</td>
+            <td>2011/05/07</td>
+            <td>$145,000</td>
+            <td>
+              <div class="badge status-badge badge-info">
+                Draft
+              </div>
+            </td>
+            <td>DRF</td>
+          </tr>
+          <tr>
+            <td>Gavin Cortez</td>
+            <td>Team Leader</td>
+            <td>San Francisco</td>
+            <td>22</td>
+            <td>2008/10/26</td>
+            <td>$235,500</td>
+            <td>
+              <div class="badge status-badge badge-info">
+                Draft
+              </div>
+            </td>
+            <td>DRF</td>
+          </tr>
+          <tr>
+            <td>Martena Mccray</td>
+            <td>Post-Sales support</td>
+            <td>Edinburgh</td>
+            <td>46</td>
+            <td>2011/03/09</td>
+            <td>$324,050</td>
+            <td>
+              <div class="badge status-badge badge-info">
+                Draft
+              </div>
+            </td>
+            <td>DRF</td>
+          </tr>
+          <tr>
+            <td>Unity Butler</td>
+            <td>Marketing Designer</td>
+            <td>San Francisco</td>
+            <td>47</td>
+            <td>2009/12/09</td>
+            <td>$85,675</td>
+            <td>
+              <div class="badge status-badge badge-info">
+                Draft
+              </div>
+            </td>
+            <td>DRF</td>
+          </tr>
+          <tr>
+            <td>Howard Hatfield</td>
+            <td>Office Manager</td>
+            <td>San Francisco</td>
+            <td>51</td>
+            <td>2008/12/16</td>
+            <td>$164,500</td>
+            <td>
+              <div class="badge status-badge badge-info">
+                Draft
+              </div>
+            </td>
+            <td>DRF</td>
+          </tr>
+          <tr>
+            <td>Hope Fuentes</td>
+            <td>Secretary</td>
+            <td>San Francisco</td>
+            <td>41</td>
+            <td>2010/02/12</td>
+            <td>$109,850</td>
+            <td>
+              <div class="badge status-badge badge-info">
+                Draft
+              </div>
+            </td>
+            <td>DRF</td>
+          </tr>
+          <tr>
+            <td>Vivian Harrell</td>
+            <td>Financial Controller</td>
+            <td>San Francisco</td>
+            <td>62</td>
+            <td>2009/02/14</td>
+            <td>$452,500</td>
+            <td>
+              <div class="badge status-badge badge-info">
+                Draft
+              </div>
+            </td>
+            <td>DRF</td>
+          </tr>
+          <tr>
+            <td>Timothy Mooney</td>
+            <td>Office Manager</td>
+            <td>London</td>
+            <td>37</td>
+            <td>2008/12/11</td>
+            <td>$136,200</td>
+            <td>
+              <div class="badge status-badge badge-info">
+                Draft
+              </div>
+            </td>
+            <td>DRF</td>
+          </tr>
+          <tr>
+            <td>Jackson Bradshaw</td>
+            <td>Director</td>
+            <td>New York</td>
+            <td>65</td>
+            <td>2008/09/26</td>
+            <td>$645,750</td>
+            <td>
+              <div class="badge status-badge badge-info">
+                Draft
+              </div>
+            </td>
+            <td>DRF</td>
+          </tr>
+          <tr>
+            <td>Olivia Liang</td>
+            <td>Support Engineer</td>
+            <td>Singapore</td>
+            <td>64</td>
+            <td>2011/02/03</td>
+            <td>$234,500</td>
+            <td>
+              <div class="badge status-badge badge-info">
+                Draft
+              </div>
+            </td>
+            <td>DRF</td>
+          </tr>
+          <tr>
+            <td>Bruno Nash</td>
+            <td>Software Engineer</td>
+            <td>London</td>
+            <td>38</td>
+            <td>2011/05/03</td>
+            <td>$163,500</td>
+            <td>
+              <div class="badge status-badge badge-info">
+                Draft
+              </div>
+            </td>
+            <td>DRF</td>
+          </tr>
+          
+        </tbody>
+        <tfoot>
+          <tr>
+            <th>
+              <input type="text" id="search_0"
+                class="form-control input-xs table-filter"
+                style="width: 100%;"
+                placeholder="Name"/>
+            </th>
+            <th>
+              <input type="text" id="search_1"
+                class="form-control input-xs table-filter"
+                style="width: 100%;"
+                placeholder="Position"/>
+            </th>
+            <th>
+              <input type="text" id="search_2"
+                class="form-control input-xs table-filter"
+                style="width: 100%;"
+                placeholder="Office"/>
+            </th>
+            <th>
+              <input type="text" id="search_3"
+                class="form-control input-xs table-filter"
+                style="width: 100%;"
+                placeholder="Age"/>
+            </th>
+            <th>
+              <input type="text" id="search_4"
+                class="form-control input-xs table-filter"
+                style="width: 100%;"
+                placeholder="Start date"/>
+            </th>
+            <th>
+              <input type="text" id="search_5"
+                class="form-control input-xs table-filter"
+                style="width: 100%;"
+                placeholder="Salary"/>
+            </th>
+            <th>
+              <!--<input type="text" id="search_6"
+                class="form-control input-xs table-filter"
+                style="width: 100%;"
+                placeholder="Status"/>  -->
+              <select class="form-control status-dropdown">
+                <option value="">All</option>
+                <option value="DRF">Draft</option>
+                <option value="PCH">Pending Review</option>
+                <option value="PAU">Pending Authorisation</option>
+                <option value="Received">Received</option>
+                <option value="Processing">Processing</option>
+                <option value="Query">Query</option>
+                <option value="Approved">Approved</option>
+                <option value="Rejected">Rejected</option>
+                <option value="Amended">Amended</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </th>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+  </body>
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+    dataTable = $("#example").DataTable({
+      "columnDefs": [
+            {
+                "targets": [7],
+                "visible": false
+            }
+        ]
+      
+    });
+  
+  
+  
+  /*dataTable.columns().every( function () {
+        var that = this;
+ 
+        $('input', this.footer()).on( 'keyup change', function () {
+            if ( that.search() !== this.value ) {
+                that.search(this.value).draw();
+            }
+        });
+      });*/
+  
+  
+    $('.filter-checkbox').on('change', function(e){
+      var searchTerms = []
+      $.each($('.filter-checkbox'), function(i,elem){
+        if($(elem).prop('checked')){
+          searchTerms.push("^" + $(this).val() + "$")
+        }
+      })
+      dataTable.column(1).search(searchTerms.join('|'), true, false, true).draw();
+    });
+  
+    $('.status-dropdown').on('change', function(e){
+      var status = $(this).val();
+      $('.status-dropdown').val(status)
+      console.log(status)
+      //dataTable.column(6).search('\\s' + status + '\\s', true, false, true).draw();
+      dataTable.column(7).search(status).draw();
+    })
+});
+</script>
+
+
+</html>
+
+
+
+
+
+
+
+
+
+
+      "columnDefs": [
+         {
+           "targets": [7],
+           "visible": false
+         }
+      ],
+
+
+
+
+
+      "language": {
+        "sProcessing": "Traitement en cours ...",
+        "sLengthMenu": "Afficher _MENU_ lignes",
+        "sZeroRecords": "Aucun résultat trouvé",
+        "sEmptyTable": "Aucune donnée disponible",
+        "sInfo": "Lignes _START_ à _END_ sur _TOTAL_",
+        "sInfoEmpty": "Aucune ligne affichée",
+        "sInfoFiltered": "(Filtrer un maximum de_MAX_)",
+        "sInfoPostFix": "",
+        "sSearch": "Chercher:",
+        "sUrl": "",
+        "sInfoThousands": ",",
+        "sLoadingRecords": "Chargement...",
+        "oPaginate": {
+          "sFirst": "Premier", "sLast": "Dernier", "sNext": "Suivant", "sPrevious": "Précédent"
+      },
+        "oAria": {
+          "sSortAscending": ": Trier par ordre croissant", "sSortDescending": ": Trier par ordre décroissant"
+      }
+    }
+  });
+ });
+</script>
+
+<script type="text/javascript">
+    $('.filter-checkbox').on('change', function(e){
+      var searchTerms = []
+      $.each($('.filter-checkbox'), function(i,elem){
+        if($(elem).prop('checked')){
+          searchTerms.push("^" + $(this).val() + "$")
+        }
+      })
+      table1.column(1).search(searchTerms.join('|'), true, false, true).draw();
+    });
+  
+    $('.status-dropdown').on('change', function(e){
+      var status = $(this).val();
+      $('.status-dropdown').val(status)
+      console.log(status)
+      //dataTable.column(6).search('\\s' + status + '\\s', true, false, true).draw();
+      table1.column(7).search(status).draw();
+    })
+</script>
+
+
+
+
+<script type="text/javascript">
+
+$(function () {
+  var loadForm = function () {
+    var btn = $(this);
+    $.ajax({
+      url: btn.attr("data-url"),
+      type: 'get',
+      dataType: 'json',
+      beforeSend: function () {
+        $("#modal-commande .modal-content").html("");
+        //$("#modal-commande").modal("show");
+      },
+      success: function (data) {
+        $("#modal-commande .modal-content").html(data.html_form);
+      }
+    });
+  };
+
+  var saveForm = function () {
+    var form = $(this);
+    $.ajax({
+      url: form.attr("action"),
+      data: form.serialize(),
+      type: form.attr("method"),
+      dataType: 'json',
+      success: function (data) {
+        if (data.form_is_valid) {
+          $("#commande-table tbody").html(data.html_commande_list);
+          $("#modal-commande").modal("hide");
+        }
+        else {
+          $("#modal-commande .modal-content").html(data.html_form);
+        }
+      }
+    });
+    return false;
+  };
+  /* Binding */
+  // Delete commande
+  $("#table1").on("click", ".js-delete-commande", loadForm);
+  //$("#modal-commande").on("submit", ".js-commande-delete-form", saveForm);
+});
+</script>
+
+{% endcomment %}

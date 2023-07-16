@@ -1,0 +1,240 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
+{% load has_group %}
+
+{% block aside %}
+  {% include "devis/aside.html" %}        
+{% endblock aside %}  
+
+
+{% block content %}    
+<section class="content-header">
+  <h1>Devis</h1>
+  <ol class="breadcrumb">
+    <a href="{% url 'devis:devis_creer' %}"><span class="btn btn-xs btn-primary"><span class="glyphicon glyphicon-plus"></span>  Ajouter un devis</span></a>
+  </ol>
+</section>
+
+<!-- Main content -->
+<section class="content">
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="box box-primary">
+        <div class="box-header"></div>
+        <div class="box-body">
+          <table id="table1" class="table table-bordered table-striped" cellspacing="0" width="100%">
+            <caption id="tablecaption" align="center"></caption>
+            <thead>
+              <tr bgcolor="#bee5eb">
+    		        <th>Date</th>
+                <th>N° Devis</th>
+    		        <th>Client</th>
+    		        <th>Mode tarification</th>
+                <th>Montant</th>
+    		        <th>Lieu de chgt</th>
+                <th>Lieu dechgt</th>
+                <th>Itinéraires / Sces</th>
+    		        <th><center>Actions</center></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for i in devis_list %}
+                <tr>
+                  <td>{{ i.date_devis|date:"d M y" }}</td>
+                  <td>{{ i.numero_devis }}</td>
+                  <td>{{ i.client }}</td>
+                  <td>{{ i.mode_tarification }}</td>
+                  <td align="right">{{ i.montant_total_ht|floatformat:"0" }}</td>
+                  <td>{{ i.lieu_chargement }}</td>
+                  <td>{{ i.lieu_dechargement }}</td>
+                  <td><a href="{% url 'devis:devis_detail_lister' i.id %}">{{ i.detailsdevis_set.all|length }} Itinéraire(s)</a></td>
+                  <td>
+                  <a href="{% url 'devis:devis_modifier' pk=i.id %}"><span type="button" class="btn btn-sm btn-primary"><span class="glyphicon glyphicon-pencil"></span>  Modifier</span></a>
+                   <a href="{% url 'devis:devis_imprimer' pk=i.id %}" target="_blank"><span class="btn btn-sm btn-success"> <span class="glyphicon glyphicon-print"></span>  Imprimer</span></a>
+                   <a href="{% url 'devis:devis_transformer_facture' pk=i.id %}"><span class="btn btn-sm btn-default"><span class="glyphicon glyphicon-save"></span>  Transf. en OT</span></a> 
+                  {% if user.is_superuser %}
+                  <button type="button"
+                          class="btn btn-danger btn-sm js-delete-devis" data-toggle="modal" data-target="#modal-devis"
+                          data-url="{% url 'devis:devis_delete' pk=i.id %}">
+                    <span class="glyphicon glyphicon-trash"></span> Supprimer
+                  </button>
+                  {% endif %}
+              	  </td>
+                </tr>
+              {% endfor %}    
+            </tbody>
+            <tfoot>
+              <tr>
+                <td><b></b></td>
+                <td></b></td>
+                <td></td>
+                <td><b>Montant</b></td>
+                <td align="right"><b>{{ montant_total|floatformat:"0" }}</b></td>
+                <td></td>
+                <td></td>
+                <td></td>   
+                <td></td>                                                             
+              </tr>
+            </tfoot>            
+          </table>    
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modal-devis">
+    <div class="modal-dialog">
+      <div class="modal-content">
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="{% static 'js/jquery-3.3.1.js' %}"></script>
+<script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+
+<style type="text/css">
+  th, td {
+    white-space: nowrap;
+}
+</style>
+
+<script type="text/javascript">
+  $('#tablecaption').text('');
+  $(document).ready(function() {
+    $('#table1').DataTable({
+      'paging'      : true,
+      'lengthChange': false,
+      "lengthMenu"  : [[15, 50, -1], [15, 50, "All"]],
+      'searching'   : true,
+      'ordering'    : false,
+      'info'        : true,
+      'autoWidth'   : true,
+      'scrollX'     : true,
+      'scrollY'     : '400',
+      'scrollCollapse' : true,  
+      dom: 'Bfrtip',
+      buttons: [
+          {
+            extend: 'print',
+            title: 'LISTE DES DEVIS',
+            footer:true,
+            exportOptions: {
+              columns: [ 0, 1, 2, 3, 4, 5, 6, 7],              
+              format: {
+                    body: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 6 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    },
+                    footer: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 6 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    }
+                  }
+               },
+          },              
+
+
+          {
+            extend: 'excelHtml5',
+            text: 'Excel',
+            title: 'LISTE DES DEVIS',
+            footer:true,
+            exportOptions: {
+              columns: [ 0, 1, 2, 3, 4, 5, 6, 7],              
+              format: {
+                    body: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 6 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    },
+
+                    footer: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 6 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    }
+
+                  }
+                },
+          },
+
+      ],
+
+
+
+      "language": {
+        "sProcessing": "Traitement en cours ...",
+        "sLengthMenu": "Afficher _MENU_ lignes",
+        "sZeroRecords": "Aucun résultat trouvé",
+        "sEmptyTable": "Aucune donnée disponible",
+        "sInfo": "Lignes _START_ à _END_ sur _TOTAL_",
+        "sInfoEmpty": "Aucune ligne affichée",
+        "sInfoFiltered": "(Filtrer un maximum de_MAX_)",
+        "sInfoPostFix": "",
+        "sSearch": "Chercher:",
+        "sUrl": "",
+        "sInfoThousands": ",",
+        "sLoadingRecords": "Chargement...",
+        "oPaginate": {
+          "sFirst": "Premier", "sLast": "Dernier", "sNext": "Suivant", "sPrevious": "Précédent"
+      },
+        "oAria": {
+          "sSortAscending": ": Trier par ordre croissant", "sSortDescending": ": Trier par ordre décroissant"
+      }
+    }
+  });
+ });
+</script>
+
+<script type="text/javascript">
+
+$(function () {
+  var loadForm = function () {
+    var btn = $(this);
+    $.ajax({
+      url: btn.attr("data-url"),
+      type: 'get',
+      dataType: 'json',
+      beforeSend: function () {
+        $("#modal-devis .modal-content").html("");
+        //$("#modal-devis").modal("show");
+      },
+      success: function (data) {
+        $("#modal-devis .modal-content").html(data.html_form);
+      }
+    });
+  };
+
+  var saveForm = function () {
+    var form = $(this);
+    $.ajax({
+      url: form.attr("action"),
+      data: form.serialize(),
+      type: form.attr("method"),
+      dataType: 'json',
+      success: function (data) {
+        if (data.form_is_valid) {
+          $("#devis-table tbody").html(data.html_devis_list);
+          $("#modal-devis").modal("hide");
+        }
+        else {
+          $("#modal-devis .modal-content").html(data.html_form);
+        }
+      }
+    });
+    return false;
+  };
+  /* Binding */
+  // Delete devis
+  $("#table1").on("click", ".js-delete-devis", loadForm);
+  //$("#modal-devis").on("submit", ".js-devis-delete-form", saveForm);
+});
+
+</script>
+{% endblock content %}

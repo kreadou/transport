@@ -1,0 +1,27 @@
+{% for client in clients %}
+  <tr>
+    <td>{{ client.raison_sociale }}</td>
+    <td>{{ client.adresse}}</td>
+    <td>{{ client.boite_postale }}</td>
+    <td>{{ client.telephone }}</td>
+    <td>{{ client.cellulaire }}</td>
+    <td>{{ client.compte_contribuable }}</td>
+    <td>{{ client.registre_commerce}}</td>
+    <td style="width:200px">
+      <button type="button"
+              class="btn btn-warning btn-sm js-update-client" data-toggle="modal" data-target="#modal-client"
+              data-url="{% url 'client:client_update' client.id %}">
+        <span class="glyphicon glyphicon-pencil"></span> Modifier
+      </button>
+      <button type="button"
+              class="btn btn-danger btn-sm js-delete-client" data-toggle="modal" data-target="#modal-client"
+              data-url="{% url 'client:client_delete' client.id %}">
+        <span class="glyphicon glyphicon-trash"></span> Supprimer
+      </button>
+    </td>
+  </tr>
+{% empty %}
+  <tr>
+    <td colspan="8" class="text-center bg-warning">No client</td>
+  </tr>
+{% endfor %}

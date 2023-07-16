@@ -1,0 +1,26 @@
+{% for commande in commandes %}
+  <tr>
+    <td>{{ commande.etat_commande }}</td>
+    <td>{{ commande.date_commande|date:"d M y" }}</td>
+    <td>{{ commande.client }}</td>
+    <td>{{ commande.description|truncatechars:50 }}</td>
+    <td align="right">{{ commande.tonnage_estime }}</td>
+    <td align="right">{{ commande.volume_estime }}</td>
+    <td style="width:200px">
+      <button type="button"
+              class="btn btn-warning btn-sm js-update-commande" data-toggle="modal" data-target="#modal-commande"
+              data-url="{% url 'commande:commande_update' commande.id %}">
+        <span class="glyphicon glyphicon-pencil"></span> Modifier
+      </button>
+      <button type="button"
+              class="btn btn-danger btn-sm js-delete-commande" data-toggle="modal" data-target="#modal-commande"
+              data-url="{% url 'commande:commande_delete' commande.id %}">
+        <span class="glyphicon glyphicon-trash"></span> Supprimer
+      </button>
+    </td>
+  </tr>
+{% empty %}
+  <tr>
+    <td colspan="8" class="text-center bg-warning">No commande</td>
+  </tr>
+{% endfor %}

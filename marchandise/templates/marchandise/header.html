@@ -1,0 +1,83 @@
+{% load static %}
+{% load has_group %}
+<header class="main-header">
+ <!-- Logo -->
+  <a href="{#% url "auto:index" %#}" class="logo">
+    <!-- mini logo for sidebar mini 50x50 pixels -->
+    <span class="logo-mini"><b>C</b>I</span>
+    <!-- logo for regular state and mobile devices -->
+    <span class="logo-lg"><h5> </h5></span>
+  </a>
+  <!-- Header Navbar: style can be found in header.less -->
+  <nav class="navbar navbar-static-top">
+      <!-- Sidebar toggle button-->
+    <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
+      <span class="sr-only">Toggle navigation</span>
+    </a>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
+      <ul class="nav navbar-nav">
+
+        {#% if perms.production.add_prospect %#}
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">AUTRES<span class="caret"></span></a>
+            <ul class="dropdown-menu" role="menu">
+              <li><a href="{#% url 'auto:contrat_lister' %#}"><i class="fa fa-table"></i>Liste des contrats auto</a></li>
+              <li><a href="{#% url 'auto:contrat_lister' %#}"><i class="fa fa-table"></i>Liste des contrats auto</a></li>
+              <li><a href="{#% url 'auto:contrat_lister' %#}"><i class="fa fa-table"></i>Liste des contrats auto</a></li>
+              <li><a href="{#% url 'auto:contrat_lister' %#}"><i class="fa fa-table"></i>Liste des contrats auto</a></li>
+              <li><a href="{#% url 'auto:contrat_lister' %#}"><i class="fa fa-table"></i>Liste des contrats auto</a></li>
+              <li><a href="{#% url 'auto:contrat_lister' %#}"><i class="fa fa-table"></i>Liste des contrats auto</a></li>
+            </ul>
+          </li>
+        {#% endif %#}
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">APPLICATIONS <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+             <li><a href="{% url 'ordretransport:accueil' %}"><i class="fa fa-user" style="color:orange"></i>OT</a></li>
+             <li><a href="{% url 'commande:accueil' %}"><i class="fa fa-user" style="color:orange"></i>Commandes</a></li>
+             <li><a href="{% url 'reparation:accueil' %}"><i class="fa fa-user" style="color:orange"></i>Réparations</a></li>
+             <li><a href="{% url 'entretien:accueil' %}"><i class="fa fa-user" style="color:orange"></i>Entretiens</a></li>  
+             <li><a href="{% url 'alerte:accueil' %}"><i class="fa fa-user" style="color:orange"></i>Alerts</a></li>      
+             <li><a href="{% url 'facturation:accueil' %}"><i class="fa fa-user" style="color:orange"></i>Facturation</a></li>
+             <li><a href="{% url 'reglement:accueil' %}"><i class="fa fa-user" style="color:orange"></i>Règlement</a></li>
+             <li><a href="{% url 'planning:accueil' %}"><i class="fa fa-user" style="color:orange"></i>Planning</a></li>
+             <li><a href="{% url 'marchandise:accueil' %}"><i class="fa fa-user" style="color:orange"></i>Marchandises</a></li>
+             <li><a href="{% url 'carburant:accueil' %}"><i class="fa fa-user" style="color:orange"></i>Carburant</a></li>
+             <li><a href="{% url 'vehicule:accueil' %}"><i class="fa fa-user" style="color:orange"></i>Véhicules</a></li>
+             <li><a href="{% url 'chauffeur:accueil' %}"><i class="fa fa-users" style="color:orange"></i>Chauffeurs</a></li>                 
+             <li><a href="{% url 'parametre:accueil' %}"><i class="fa fa-user" style="color:orange"></i>Accueil</a></li>
+            {% if user.is_superuser %}
+              <li><a href="{% url 'tableaubord:accueil' %}"><i class="fa fa-bar-chart-o" style="color:blue"></i>Tableaux de bords</a></li>
+            {% endif %}
+        </ul>
+      </li>
+    </ul>
+  </div>    
+
+  <!-- Navbar Right Menu -->
+  <div class="navbar-custom-menu">
+    <ul class="nav navbar-nav">
+      <!-- User Account: style can be found in dropdown.less -->
+      <li class="dropdown user user-menu">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+          <img src="{{ MEDIA_URL }}{{ user.profil.photo.url }}" class="user-image" alt="User Image">
+          <span class="hidden-xs">{{ user.last_name }}</span>
+        </a>
+        <ul class="dropdown-menu">
+          <!-- User image -->
+          <li class="user-header">
+            <img src="{{ MEDIA_URL }}{{ user.profil.photo.url }}" class="img-circle" alt="User Image">
+            <p>
+              {{ user.last_name }} - {{ user.profil.fonction }}
+              <small></small>
+            </p>
+          </li>
+        </ul>
+      </li>
+      <li><a href="{% url 'parametre:accueil' %}">ACCUEIL</a></li>
+      <li><a href="{% url 'parametre:login' %}">LOGOUT</a></li>
+    </ul>
+  </div>
+</nav>
+</header>

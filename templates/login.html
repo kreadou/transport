@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Transport | Connection</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <!--  Font Awesome -->
+    <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="{% static 'css/ionicons.min.css' %}">
+    <!-- Theme style  -->
+    <link rel="stylesheet" href="{% static 'css/AdminLTE.min.css' %}">
+    <!-- <link rel="stylesheet" href="{% static "fondecran.css" %}">-->
+  </head>
+
+  <body>
+     <!-- Main content style="font-size: 18px;" -->
+      <section class="content">
+        <!-- Info boxes -->
+          <div class="row">
+              <div class="box-body">
+                  <form method="post" action="{% url 'parametre:login' %}">{% csrf_token %}
+                      <div class="col-md-4 col-md-offset-4">
+                          <div class="form-group">
+                              <table class="table table-bordered">
+                                  <tr>
+                                    <td>{{ form.username.label_tag }}</td>
+                                    <td>{{ form.username }}</td>
+                                  </tr>
+                                  <tr>
+                                    <td>{{ form.password.label_tag }}</td>
+                                    <td>{{ form.password }}</td>
+                                  </tr>
+                              </table>
+                              <p class="bs-component">
+                                <button type="submit" class="btn btn-primary btn-block btn-flat">Login</button>
+                              </p>
+                                <input type="hidden" name="next" value="{{ next }}" />
+                          </div>
+                        </div>
+                  </form>
+              </div>
+          </div>
+          <center><img width="100%" height="30%" src="{% static 'images/accueil.png' %}"></center>
+      </section>
+    </body>
+</html>
+
+<script src="{% static 'js/jquery-3.5.1.js' %}"></script>
+<script type="text/javascript">
+  /*$('input[type="text"]').get(0).focus();*/
+  $("#id_username").focus();
+</script>

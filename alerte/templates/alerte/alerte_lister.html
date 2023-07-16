@@ -1,0 +1,351 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
+{% load has_group %}
+{% load lire_dict %}
+
+{% block aside %}
+  {% include "alerte/aside.html" %}        
+{% endblock aside %}   
+
+{% block content %}    
+<section class="content-header">
+  <h1>Alertes</h1>
+  <ol class="breadcrumb">
+    <a href="{% url 'alerte:alerte_parametre' %}"><span class="btn btn-xs btn-primary"><span class="glyphicon glyphicon-pencil"></span>  Modifier les paramètres d'alertes</span></a>
+  </ol>
+</section>
+
+<!--
+{{ alerte_list }}
+=========================
+{{ alerte_list|lire_dict:'Carte accès portuaire' }}
+-->
+<section class="content">
+
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="box box-primary">
+        <div class="box-header"><h3><b>Véhicules</b></h3></div>
+        <div class="box-body">
+          <table id="table1" class="table table-bordered table-striped" cellspacing="0" width="100%">
+            <thead>
+              <tr bgcolor="#bee5eb">
+    		        <th><center>Véhicule</center></th>
+    		        <th><center>Type</center></th>
+    		        <th><center>Utilisation</center></th>
+    		        <th><center>Assurance</center></th>
+                <th><center>Visite</center></th>
+                <th><center>Stationnement</center></th>
+                <th><center>Patente</center></th>
+                <th><center>Chauffeurs</center></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for i in vehicule_list %}
+                <tr>
+                  <td>{{ i.immatriculation }}</td>
+                  <td>{{ i.type_vehicule }}</td>
+                  <td>{{ i.mode_utilisation }}</td>
+                  <center><td align="center">
+                    {% if i.assurance > alerte_list|lire_dict:'Assurance' %}
+                      <span class="pull-center badge bg-green">{{ i.assurance }} jour(s)</span>
+                    {% elif i.assurance > 5 %}
+                      <span class="pull-center badge bg-yellow">{{ i.assurance }} jour(s)</span>
+                    {% elif i.assurance > 1 %}
+                      <span class="pull-center badge bg-maroon">{{ i.assurance }} jour(s)</span>
+                    {% else %}
+                      <span class="pull-center badge bg-red">{{ i.assurance }} jour(s)</span>
+                    {% endif %}
+
+                  </td></center>
+                  <td align="center">
+                    {% if i.visite > alerte_list|lire_dict:'Visite technique' %}
+                      <span class="pull-center badge bg-green">{{ i.visite }} jour(s)</span>
+                    {% elif i.visite > 5 %}
+                      <span class="pull-center badge bg-yellow">{{ i.visite }} jour(s)</span>
+                    {% elif i.visite > 1 %}
+                      <span class="pull-center badge bg-maroon">{{ i.visite }} jour(s)</span>
+                    {% else %}
+                      <span class="pull-center badge bg-red">{{ i.visite }} jour(s)</span>
+                    {% endif %}
+                  </td>
+                  <td align="center">
+                    {% if i.stationnement > alerte_list|lire_dict:'Stationnement' %}
+                      <span class="pull-center badge bg-green">{{ i.stationnement }} jour(s)</span>
+                    {% elif i.stationnement > 5 %}
+                      <span class="pull-center badge bg-yellow">{{ i.stationnement }} jour(s)</span>
+                    {% elif i.stationnement > 1 %}
+                      <span class="pull-center badge bg-maroon">{{ i.stationnement }} jour(s)</span>
+                    {% else %}
+                      <span class="pull-center badge bg-red">{{ i.stationnement }} jour(s)</span>
+                    {% endif %}
+                  </td>
+                  <td align="center">
+                    {% if i.patente > alerte_list|lire_dict:'Patente' %}
+                      <span class="pull-center badge bg-green">{{ i.patente }} jour(s)</span>
+                    {% elif i.patente > 5 %}
+                      <span class="pull-center badge bg-yellow">{{ i.patente }} jour(s)</span>
+                    {% elif i.patente > 1 %}
+                      <span class="pull-center badge bg-maroon">{{ i.patente }} jour(s)</span>
+                    {% else %}
+                      <span class="pull-center badge bg-red">{{ i.patente }} jour(s)</span>
+                    {% endif %}
+                  </td>                 
+                  <td>{{ i.chauffeur_set.all.0 }}</td>
+                </tr>
+              {% endfor %}    
+            </tbody>
+          </table>    
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="box box-primary">
+        <div class="box-header"><h3><b>Chauffeurs</b></h3></div>
+        <div class="box-body">
+          <table id="table2" class="table table-bordered table-striped" cellspacing="0" width="100%">
+            <thead>
+              <tr bgcolor="#70E9E4">
+                <th><center>Matricule</center></th>
+                <th><center>Chauffeurs</center></th>
+                <th><center>Statut</center></th>
+                <th><center>Contrat</center></th>
+                <th><center>Pièce d'identité</center></th>
+                <th><center>Permis de conduire</center></th>
+                <th><center>Carte Accès Port</center></th>
+                <th><center>Véhicule</center></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for i in chauffeur_list %}
+                <tr>
+                  <td>{{ i.matricule }}</td>
+                  <td>{{ i.nom.upper }} {{ i.prenoms.title }}</td>
+                  <td>{{ i.statut }}</td>
+                  <td>{{ i.type_contrat }}</td>
+                  <td align="center">
+                    {% if i.piece > alerte_list|lire_dict:"Pièce d'identité" %}
+                      <span class="pull-center badge bg-green">{{ i.piece }} jour(s)</span>
+                    {% elif i.piece > 5 %}
+                      <span class="pull-center badge bg-yellow">{{ i.piece }} jour(s)</span>
+                    {% elif i.piece > 1 %}
+                      <span class="pull-center badge bg-maroon">{{ i.piece }} jour(s)</span>
+                    {% else %}
+                      <span class="pull-center badge bg-red">{{ i.piece }} jour(s)</span>
+                    {% endif %}
+                  </td>
+                  <td align="center">
+                    {% if i.permis > alerte_list|lire_dict:'Permis de conduire' %}
+                      <span class="pull-center badge bg-green">{{ i.permis }} jour(s)</span>
+                    {% elif i.permis > 5 %}
+                      <span class="pull-center badge bg-yellow">{{ i.permis }} jour(s)</span>
+                    {% elif i.permis > 1 %}
+                      <span class="pull-center badge bg-maroon">{{ i.permis }} jour(s)</span>
+                    {% else %}
+                      <span class="pull-center badge bg-red">{{ i.permis }} jour(s)</span>
+                    {% endif %}
+                  </td>
+                  <td align="center">
+                    {% if i.acces > alerte_list|lire_dict:'Carte accès portuaire' %}
+                      <span class="pull-center badge bg-green">{{ i.acces }} jour(s)</span>
+                    {% elif i.acces > 5 %}
+                      <span class="pull-center badge bg-yellow">{{ i.acces }} jour(s)</span>
+                    {% elif i.acces > 1 %}
+                      <span class="pull-center badge bg-maroon">{{ i.acces }} jour(s)</span>
+                    {% else %}
+                      <span class="pull-center badge bg-red">{{ i.acces }} jour(s)</span>
+                    {% endif %}
+                  </td>                 
+                  <td>{{ i.vehicule }}</td>
+                </tr>
+              {% endfor %}    
+            </tbody>
+          </table>    
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="box box-primary">
+        <div class="box-header"><h3><b>Entretiens</b></h3></div>
+        <div class="box-body">
+          <table id="table3" class="table table-bordered table-striped" cellspacing="0" width="100%">
+            <thead>
+              <tr bgcolor="#70E9E4">
+                <th width="40"><center>Date début</center></th>
+                <th width="40"><center>Date fin</center></th>
+                <th width="40"><center>Véhicule</center></th>
+                <th width="40"><center>Km</center></th>
+                <th width="100"><center>Prochain entretien daté</center></th>
+                <th width="40"><center>Prochain Entretien Km</center></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for i in entretien_list %}
+                <tr>
+                  <td align="center">{{ i.date_entretien_debut|date:"d M y" }}</td>
+                  <td align="center">{{ i.date_entretien_fin|date:"d M y" }}</td>
+                  <td align="center">{{ i.vehicule.immatriculation }}</td>
+                  <td align="center">{{ i.kilometrage }}</td>
+                  <td align="center">
+                    {% if i.prochain > alerte_list|lire_dict:'Prochain entretien en date' %}
+                      <span class="pull-center badge bg-green">{{ i.prochain }} jour(s)</span>
+                    {% elif i.prochain > 5 %}
+                      <span class="pull-center badge bg-yellow">{{ i.prochain }} jour(s)</span>
+                    {% elif i.prochain > 1 %}
+                      <span class="pull-center badge bg-maroon">{{ i.prochain }} jour(s)</span>
+                    {% else %}
+                      <span class="pull-center badge bg-red">{{ i.prochain }} jour(s)</span>
+                    {% endif %}
+                  </td>
+                  <td align="center">{{ i.kilometrage_prochain_entretien }}</td>
+                </tr>
+              {% endfor %}    
+            </tbody>
+          </table>    
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="{% static 'js/jquery-3.3.1.js' %}"></script>
+<script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+
+<style type="text/css">
+  th, td {
+    white-space: nowrap;
+}
+</style>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    
+    $('#table1').DataTable({
+      'paging'      : true,
+      'lengthChange': false,
+      "lengthMenu"  : [[15, 50, -1], [15, 50, "All"]],
+      'searching'   : true,
+      'ordering'    : false,
+      'info'        : true,
+      'autoWidth'   : true,
+      'scrollX'     : true,
+      'scrollY'     : '400',
+      'scrollCollapse' : true,  
+
+      dom: 'Bfrtip',
+            buttons: ['print', 'excel',
+
+      ],
+
+      "language": {
+        "sProcessing": "Traitement en cours ...",
+        "sLengthMenu": "Afficher _MENU_ lignes",
+        "sZeroRecords": "Aucun résultat trouvé",
+        "sEmptyTable": "Aucune donnée disponible",
+        "sInfo": "Lignes _START_ à _END_ sur _TOTAL_",
+        "sInfoEmpty": "Aucune ligne affichée",
+        "sInfoFiltered": "(Filtrer un maximum de_MAX_)",
+        "sInfoPostFix": "",
+        "sSearch": "Chercher:",
+        "sUrl": "",
+        "sInfoThousands": ",",
+        "sLoadingRecords": "Chargement...",
+        "oPaginate": {
+          "sFirst": "Premier", "sLast": "Dernier", "sNext": "Suivant", "sPrevious": "Précédent"
+      },
+        "oAria": {
+          "sSortAscending": ": Trier par ordre croissant", "sSortDescending": ": Trier par ordre décroissant"
+      }
+    }
+  });
+
+    $('#table2').DataTable({
+      'paging'      : true,
+      'lengthChange': false,
+      "lengthMenu"  : [[15, 50, -1], [15, 50, "All"]],
+      'searching'   : true,
+      'ordering'    : false,
+      'info'        : true,
+      'autoWidth'   : true,
+      'scrollX'     : true,
+      'scrollY'     : '400',
+      'scrollCollapse' : true,  
+
+      dom: 'Bfrtip',
+            buttons: ['print', 'excel',
+
+      ],
+
+      "language": {
+        "sProcessing": "Traitement en cours ...",
+        "sLengthMenu": "Afficher _MENU_ lignes",
+        "sZeroRecords": "Aucun résultat trouvé",
+        "sEmptyTable": "Aucune donnée disponible",
+        "sInfo": "Lignes _START_ à _END_ sur _TOTAL_",
+        "sInfoEmpty": "Aucune ligne affichée",
+        "sInfoFiltered": "(Filtrer un maximum de_MAX_)",
+        "sInfoPostFix": "",
+        "sSearch": "Chercher:",
+        "sUrl": "",
+        "sInfoThousands": ",",
+        "sLoadingRecords": "Chargement...",
+        "oPaginate": {
+          "sFirst": "Premier", "sLast": "Dernier", "sNext": "Suivant", "sPrevious": "Précédent"
+      },
+        "oAria": {
+          "sSortAscending": ": Trier par ordre croissant", "sSortDescending": ": Trier par ordre décroissant"
+      }
+    }
+  });
+
+    $('#table3').DataTable({
+      'paging'      : true,
+      'lengthChange': false,
+      "lengthMenu"  : [[15, 50, -1], [15, 50, "All"]],
+      'searching'   : true,
+      'ordering'    : false,
+      'info'        : true,
+      'autoWidth'   : true,
+      'scrollX'     : true,
+      'scrollY'     : '400',
+      'scrollCollapse' : true,  
+
+      dom: 'Bfrtip',
+            buttons: ['print', 'excel',
+
+      ],
+
+      "language": {
+        "sProcessing": "Traitement en cours ...",
+        "sLengthMenu": "Afficher _MENU_ lignes",
+        "sZeroRecords": "Aucun résultat trouvé",
+        "sEmptyTable": "Aucune donnée disponible",
+        "sInfo": "Lignes _START_ à _END_ sur _TOTAL_",
+        "sInfoEmpty": "Aucune ligne affichée",
+        "sInfoFiltered": "(Filtrer un maximum de_MAX_)",
+        "sInfoPostFix": "",
+        "sSearch": "Chercher:",
+        "sUrl": "",
+        "sInfoThousands": ",",
+        "sLoadingRecords": "Chargement...",
+        "oPaginate": {
+          "sFirst": "Premier", "sLast": "Dernier", "sNext": "Suivant", "sPrevious": "Précédent"
+      },
+        "oAria": {
+          "sSortAscending": ": Trier par ordre croissant", "sSortDescending": ": Trier par ordre décroissant"
+      }
+    }
+  });
+
+
+ });
+</script>
+{% endblock content %}

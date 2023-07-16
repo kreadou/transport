@@ -1,0 +1,91 @@
+{% load static %}
+
+ <li class="dropdown messages-menu">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+      <i class="fa fa-car"></i>
+      <span class="label label-success">{% if context.total_alerte_vehicule %} {{ context.total_alerte_vehicule }} {% else %} {% endif %}</span>
+    </a>
+    <ul class="dropdown-menu">
+      <li class="header">Alertes véhicules {{ context.total_alerte_vehicule }} alerte(s)</li>
+      <li>
+        <!-- inner menu: contains the actual data -->
+        <ul class="menu">
+          {% for i, j in context.type_alerte_vehicule.items %}
+          <li><!-- start message -->
+            <a href="#">
+              <div class="pull-left">
+                <img src="{% static 'images/vehicule.jpg' %}" class="img-circle" alt="User Image">
+              </div>
+              <h4>
+                {{ i }}
+                <small><i class=""></i> {{ j }}</small>
+              </h4>
+              <p></p>
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </li>
+      <li class="footer"><a href="#"></a></li>
+    </ul>
+  </li>
+ 
+  <!-- Notifications: style can be found in dropdown.less -->
+  <li class="dropdown notifications-menu">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+      <i class="fas fa-car-crash"></i>
+      <span class="label label-warning">{{ context.total_alerte_chauffeur }}</span>
+    </a>
+    <ul class="dropdown-menu">
+      <li class="header">Vous avez {{ context.total_alerte_chauffeur }} alerte(s)</li>
+      <li>
+        <!-- inner menu: contains the actual data -->
+        <ul class="menu">
+          {% for i, j in context.type_alerte_chauffeur.items %}
+          <li>
+              <h4>
+                <i class="fa fa-user text-green"></i> {{ i }}
+                <small><i class=""></i> {{ j }}</small>
+              </h4>
+          </li>
+          {% endfor %}
+        </ul>
+      </li>
+      <li class="footer"><a href="#"></a></li>
+    </ul>
+  </li>
+
+
+  <!-- Tasks: style can be found in dropdown.less -->
+  <li class="dropdown tasks-menu">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+      <i class="fa fa-users"></i>
+      <span class="label label-danger">{{ context.total_alerte_entretien }}</span>
+    </a>
+    <ul class="dropdown-menu">
+      <li class="header">Vous avez {{ context.total_alerte_entretien }} alerte(s)</li>
+      <li>
+        <!-- inner menu: contains the actual data -->
+        <ul class="menu">
+          {% for i, j in context.type_alerte_entretien.items %}
+          <li><!-- Task item -->
+            <a href="#">
+              <h3>
+                {{ i }}
+                <small class="pull-right">{{ j }}</small>
+              </h3>
+              <div class="progress xs">
+                <div class="progress-bar progress-bar-aqua" style="width: {{j}}%" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
+                  <span class="sr-only">{{ j }}</span>
+                </div>
+              </div>
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </li>
+      <li class="footer">
+        <a href="#"></a>
+      </li>
+    </ul>
+  </li>

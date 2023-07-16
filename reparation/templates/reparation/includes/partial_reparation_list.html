@@ -1,0 +1,27 @@
+{% for reparation in reparations %}
+  <tr>
+    <td>{{ reparation.date_reparation_debut|date:"d M y" }}</td>
+    <td>{{ reparation.date_reparation_fin|date:"d M y" }}</td>
+    <td>{{ reparation.type_reparation }}</td>
+    <td>{{ reparation.vehicule.immatriculation }}</td>
+    <td>{{ reparation.fournisseur }}</td>
+    <td>{{ reparation.kilometrage }}</td>
+    <td align="right">{{ reparation.montant }}</td>
+    <td style="width:200px">
+      <button type="button"
+              class="btn btn-warning btn-sm js-update-reparation" data-toggle="modal" data-target="#modal-reparation"
+              data-url="{% url 'reparation:reparation_update' reparation.id %}">
+        <span class="glyphicon glyphicon-pencil"></span> Modifier
+      </button>
+      <button type="button"
+              class="btn btn-danger btn-sm js-delete-reparation" data-toggle="modal" data-target="#modal-reparation"
+              data-url="{% url 'reparation:reparation_delete' reparation.id %}">
+        <span class="glyphicon glyphicon-trash"></span> Supprimer
+      </button>
+    </td>
+  </tr>
+{% empty %}
+  <tr>
+    <td colspan="8" class="text-center bg-warning">No reparation</td>
+  </tr>
+{% endfor %}

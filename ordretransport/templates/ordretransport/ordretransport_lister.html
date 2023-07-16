@@ -1,0 +1,484 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
+{% load has_group %}
+
+{% block aside %}
+  {% include "ordretransport/aside.html" %}        
+{% endblock aside %}  
+
+{% block content %}    
+<section class="content-header">
+  <h1>Ordre de Transport (OT)</h1>
+  <ol class="breadcrumb">
+    <a href="{% url 'ordretransport:ordretransport_creer' %}"><span class="btn btn-xs btn-primary"><span class="glyphicon glyphicon-plus"></span>  Ajouter un OT</span></a>
+  </ol>
+</section>
+
+<!-- Main content -->
+<section class="content">
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="box box-primary">
+        <div class="box-header"></div>
+        <div class="box-body">
+          <table id="table1" class="table table-bordered table-striped" cellspacing="0" width="100%">
+            <thead>
+              <tr bgcolor="#bee5eb">
+    		        <th>
+                  <select class="form-control" id='id_date'>
+                    <option value="-1">(Toutes)</option>
+                    {% for i in date_list %} 
+                     <option value="{{ i }}">{{ i }}</option>
+                    {% endfor %}  
+                  </select>
+                </th>
+    		        <th></th>
+                <th></th>
+                <th>
+                  <select class="form-control" id='id_client'>
+                    <option value="-1">(Tous)</option>
+                    {% for i in client_list %} 
+                     <option value="{{ i.id }}">{{ i.raison_sociale }}</option>
+                    {% endfor %}  
+                  </select>
+                </th>
+                <th>
+                  <select class="form-control" id='id_executant'>
+                    <option value="-1">(Tous)</option>
+                     <option value="Coco Inter">Coco Inter</option>
+                     <option value="Sous-Traitance">Sous-Traitance</option>
+                  </select>
+                </th>  
+                <th></th>
+    		        <th></th>
+    		        <th></th>
+              </tr>
+              <tr bgcolor="#bee5eb">
+                <th>Date</th>
+                <th>N° OT</th>
+                <th>N° Dossier</th>
+                <th>Clients</th>
+                <th>Exécutant</th>  
+                <th>Montant</th>
+                <th>Enlèvements</th>
+                <th><center>Actions</center></th>
+              </tr>
+            </thead>
+            <tbody id="list_donnee">
+              {% for i in ordretransport_list %}
+                <tr>
+                  <td>{{ i.date_ot|date:"d M y" }}</td>
+                  <td>{{ i.numero_ot }}</td>
+                  <td>{{ i.commande.numero_dossier }}</td>
+                  <td>{{ i.commande.client }}</td>
+                  <td>{{ i.qui_enleve }}</td>
+                  <td align="right">{{ i.montant_total_ht|floatformat:"0" }}</td>  
+                  <td align="center"><a href="{% url 'enlevement:enlevement_lister' pk=i.id %}">{{ i.enlevement_set.all|length }} Enlèvement(s)</a></td>
+                  <td>
+                  <a href="{% url 'ordretransport:ordretransport_modifier' pk=i.id %}"><span class="btn btn-sm btn-primary"><span class="glyphicon glyphicon-pencil"></span>  Modifier</span></a>
+                  <a href="{% url 'ordretransport:ordretransport_imprimer' pk=i.id %}" target="_blank"><span class="btn btn-sm btn-success"><span class="glyphicon glyphicon-print"></span> Imprimer OT</span></a>
+                  {% if user.is_superuser %}
+                  <button type="button"
+                          class="btn btn-sm btn-danger js-delete-ordretransport" data-toggle="modal" data-target="#modal-ordretransport"
+                          data-url="{% url 'ordretransport:ordretransport_delete' pk=i.id %}">
+                    <span class="glyphicon glyphicon-trash"></span> Supprimer
+                  </button>
+                  {% endif %}
+              	  </td>
+                </tr>
+              {% endfor %}    
+            </tbody>
+            <tfoot>
+              <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td align="right"><b>Montant total</b></td>
+                <td align="right" id="list_footer"><b>{{ montant_total|floatformat:"0" }}</b></td>
+                <td></td>
+                <td></td>                                                           
+              </tr>
+            </tfoot>             
+          </table>    
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="{% static 'js/jquery-3.3.1.js' %}"></script>
+<script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+
+<style type="text/css">
+  th, td {
+    white-space: nowrap;
+}
+</style>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    var table1 = $('#table1').DataTable({
+      'paging'      : true,
+      'lengthChange': false,
+      "lengthMenu"  : [[15, 50, -1], [15, 50, "All"]],
+      'searching'   : true,
+      'ordering'    : false,
+      'info'        : true,
+      'autoWidth'   : true,
+      'scrollX'     : true,
+      'scrollY'     : '400',
+      'scrollCollapse' : true,  
+
+      dom: 'Bfrtip',
+      buttons: [
+          {
+            extend: 'print',
+            title: 'LISTE DES ORDRES DE TRANSPORT : ' + $("#id_client option:selected").text() + ' - ' + $("#id_executant option:selected").text() + ' - ' + $("#id_date option:selected").text(),
+            footer:true,
+            exportOptions: {
+              columns: [ 0, 1, 2, 3, 4, 5, 6],              
+              format: {
+                    body: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column == 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    },
+                    footer: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column == 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    }
+                  }
+               },
+          },              
+
+
+          {
+            extend: 'excelHtml5',
+            text: 'Excel',
+            title: 'LISTE DES ORDRES DE TRANSPORT : ' + $("#id_client option:selected").text() + ' - ' + $("#id_executant option:selected").text() + ' - ' + $("#id_date option:selected").text(),
+            footer:true,
+            exportOptions: {
+              columns: [ 0, 1, 2, 3, 4, 5, 6],              
+              format: {
+                    body: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column == 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    },
+
+                    footer: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column == 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    }
+
+                  }
+                },
+          },
+
+      ],
+
+      "language": {
+        "sProcessing": "Traitement en cours ...",
+        "sLengthMenu": "Afficher _MENU_ lignes",
+        "sZeroRecords": "Aucun résultat trouvé",
+        "sEmptyTable": "Aucune donnée disponible",
+        "sInfo": "Lignes _START_ à _END_ sur _TOTAL_",
+        "sInfoEmpty": "Aucune ligne affichée",
+        "sInfoFiltered": "(Filtrer un maximum de_MAX_)",
+        "sInfoPostFix": "",
+        "sSearch": "Chercher:",
+        "sUrl": "",
+        "sInfoThousands": ",",
+        "sLoadingRecords": "Chargement...",
+        "oPaginate": {
+          "sFirst": "Premier", "sLast": "Dernier", "sNext": "Suivant", "sPrevious": "Précédent"
+      },
+        "oAria": {
+          "sSortAscending": ": Trier par ordre croissant", "sSortDescending": ": Trier par ordre décroissant"
+      }
+    }
+  });
+ });
+</script>
+
+<script type="text/javascript">
+$(function () {
+  var loadForm = function () {
+    var btn = $(this);
+    $.ajax({
+      url: btn.attr("data-url"),
+      type: 'get',
+      dataType: 'json',
+      beforeSend: function () {
+        $("#modal-ordretransport .modal-content").html("");
+        //$("#modal-ordretransport").modal("show");
+      },
+      success: function (data) {
+        $("#modal-ordretransport .modal-content").html(data.html_form);
+      }
+    });
+  };
+
+  var saveForm = function () {
+    var form = $(this);
+    $.ajax({
+      url: form.attr("action"),
+      data: form.serialize(),
+      type: form.attr("method"),
+      dataType: 'json',
+      success: function (data) {
+        if (data.form_is_valid) {
+          $("#ordretransport-table tbody").html(data.html_ordretransport_list);
+          $("#modal-ordretransport").modal("hide");
+        }
+        else {
+          $("#modal-ordretransport .modal-content").html(data.html_form);
+        }
+      }
+    });
+    return false;
+  };
+  /* Binding */
+  // Delete ordretransport
+  $("#table1").on("click", ".js-delete-ordretransport", loadForm);
+  //$("#modal-ordretransport").on("submit", ".js-ordretransport-delete-form", saveForm);
+});
+</script>
+
+
+<script type="text/javascript">
+  $(document).ready(function() {
+  $("#id_client").change(function(){
+      var id_client = $(this).val();
+      var id_date = $("#id_date").val();
+      var id_executant = $("#id_executant").val();
+      var url = "ordretransport_lister_filtrer";
+      $.ajax({
+          url: url,
+          data: {
+            'id_client': id_client, 'id_date': id_date, 'id_executant':id_executant,
+          },
+          success: function (data) {
+            $('#table1').DataTable().destroy(); 
+            $("#list_donnee").html();
+            $("#list_donnee").html(data);
+
+            $("#list_footer").html($("#id_montant").text());
+
+            $('#table1').DataTable({
+              "scrollX": true,
+              "scrollY": "400",
+            dom: 'Bfrtip',
+            buttons: [
+          {
+            extend: 'print',
+            title: 'LISTE DES ORDRES DE TRANSPORT : ' + $("#id_client option:selected").text() + ' - ' + $("#id_executant option:selected").text() + ' - ' + $("#id_date option:selected").text(),
+            footer:true,
+            exportOptions: {
+              columns: [ 0, 1, 2, 3, 4, 5, 6],              
+              format: {
+                    body: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    },
+                    footer: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    }
+                  }
+               },
+          },              
+
+
+          {
+            extend: 'excelHtml5',
+            text: 'Excel',
+            title: 'LISTE DES ORDRES DE TRANSPORT : ' + $("#id_client option:selected").text() + ' - ' + $("#id_executant option:selected").text() + ' - ' + $("#id_date option:selected").text(),
+            footer:true,
+            exportOptions: {
+              columns: [ 0, 1, 2, 3, 4, 5, 6],              
+              format: {
+                    body: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    },
+
+                    footer: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    }
+
+                  }
+                },
+          },
+
+      ],
+
+        });
+      }
+    });
+  });
+
+
+  $("#id_date").change(function(){
+      var id_client = $("#id_client").val();
+      var id_date = $(this).val();
+      var id_executant = $("#id_executant").val();
+      var url = "ordretransport_lister_filtrer";
+      $.ajax({
+          url: url,
+          data: {
+            'id_client': id_client, 'id_date': id_date, 'id_executant':id_executant,
+          },
+          success: function (data) {
+            $('#table1').DataTable().destroy(); 
+            $("#list_donnee").html();
+            $("#list_donnee").html(data);
+
+            $("#list_footer").html($("#id_montant").text());
+            $('#table1').DataTable({
+              "scrollX": true,
+              "scrollY": "400",
+            dom: 'Bfrtip',
+            buttons: [
+          {
+            extend: 'print',
+            title: 'LISTE DES ORDRES DE TRANSPORT : ' + $("#id_client option:selected").text() + ' - ' + $("#id_executant option:selected").text() + ' - ' + $("#id_date option:selected").text(),
+            footer:true,
+            exportOptions: {
+              columns: [ 0, 1, 2, 3, 4, 5, 6],              
+              format: {
+                    body: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    },
+                    footer: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    }
+                  }
+               },
+          },              
+
+
+          {
+            extend: 'excelHtml5',
+            text: 'Excel',
+            title: 'LISTE DES ORDRES DE TRANSPORT : ' + $("#id_client option:selected").text() + ' - ' + $("#id_executant option:selected").text() + ' - ' + $("#id_date option:selected").text(),
+            footer:true,
+            exportOptions: {
+              columns: [ 0, 1, 2, 3, 4, 5, 6],              
+              format: {
+                    body: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    },
+
+                    footer: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    }
+
+                  }
+                },
+          },
+
+      ],
+
+        });
+      }
+    });
+  });
+
+
+  $("#id_executant").change(function(){
+      var id_executant = $(this).val();
+      var id_client = $("#id_client").val();
+      var id_date = $("#id_date").val();
+      var url = "ordretransport_lister_filtrer";
+      $.ajax({
+          url: url,
+          data: {
+            'id_client': id_client, 'id_date': id_date, 'id_executant':id_executant,
+          },
+          success: function (data) {
+            $('#table1').DataTable().destroy(); 
+            $("#list_donnee").html();
+            $("#list_donnee").html(data);
+            
+            $("#list_footer").html($("#id_montant").text());
+            $('#table1').DataTable({
+              "scrollX": true,
+              "scrollY": "400",
+            dom: 'Bfrtip',
+            buttons: [
+          {
+            extend: 'print',
+            title: 'LISTE DES ORDRES DE TRANSPORT : ' + $("#id_client option:selected").text() + ' - ' + $("#id_executant option:selected").text() + ' - ' + $("#id_date option:selected").text(),
+            footer:true,
+            exportOptions: {
+              columns: [ 0, 1, 2, 3, 4, 5, 6],              
+              format: {
+                    body: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    },
+                    footer: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    }
+                  }
+               },
+          },              
+
+
+          {
+            extend: 'excelHtml5',
+            text: 'Excel',
+            title: 'LISTE DES ORDRES DE TRANSPORT : ' + $("#id_client option:selected").text() + ' - ' + $("#id_executant option:selected").text() + ' - ' + $("#id_date option:selected").text(),
+            footer:true,
+            exportOptions: {
+              columns: [ 0, 1, 2, 3, 4, 5, 6],              
+              format: {
+                    body: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    },
+
+                    footer: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 5 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    }
+
+                  }
+                },
+          },
+
+        ],
+
+      });
+      }
+    });
+  });
+
+
+});
+</script>
+{% endblock content %}

@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
+{% load crispy_forms_tags %}
+{% load has_group %}
+
+<!-- POUR LA DATE */-->
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+
+{% block aside %}
+  {% include "reglement/aside.html" %}        
+{% endblock aside %}    
+
+{% block content %} 
+<section class="content-header">
+  <h1>Modifier le règlement : {{ reglement.facturation.commande.numero_dossier }} - {{ reglement.facturation.commande.client.raison_sociale }}</h1>
+  <ol class="breadcrumb">
+     <a href="{#% url 'auto:paiement_commission_restant_lister' %#}"><span class="btn btn-xs btn-primary">Ajout d'un règlement</span></a>
+   </ol>
+</section>
+
+<!-- Main content -->
+<section class="content">
+<script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+{{ form.media }}
+ <form method="post" action="{% url 'reglement:reglement_modifier' pk=reglement.id %}" enctype="multipart/form-data"> {% csrf_token %}    
+   <div class="row">   
+    <div class="col-md-6">
+      <div class="box box-primary">
+        <div class="box-header"></div>
+        <div class="box-body">
+          <div class="form-row">
+            <div class="form-group col-md-12 mb-0">
+              {{ form.facturation|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-12 mb-0">
+              {{ form.date_reglement|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-6 mb-0">
+              {{ form.mode_reglement|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-6 mb-0">
+              {{ form.reference|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-12 mb-0">
+              {{ form.montant|as_crispy_field }}
+            </div>
+          </div>
+        </div>    
+      </div>
+     </div>     
+
+    <div class="col-md-6">
+      <div class="box box-primary">
+        <div class="box-header"></div>
+        <div class="box-body">
+          <div class="form-row">
+            <div class="form-group col-md-12 mb-0">
+              {{ form.observation|as_crispy_field }}
+            </div>
+          </div>
+        </div>    
+      </div>
+     </div>     
+
+    </div>
+    <button class="btn btn-primary" type="submit" name="submit" value = "enregistrer">Enregistrer</button>
+    <a href="{% url 'reglement:accueil' %}"><span class="btn btn-primary pull-right">Annuler</span></a> 
+  </form>
+</section>
+<!-- POUR LES DATES -->
+<script src="{% static 'commande/css/bootstrap.min.css' %}"></script>
+<script src="{% static 'commande/js/bootstrap.min.js' %}"></script>
+{% endblock content %}

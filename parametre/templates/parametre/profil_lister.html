@@ -1,0 +1,380 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
+{% load has_group %}
+
+
+{% block aside %}
+  <!-- Left side column. contains the logo and sidebar -->
+  <aside class="main-sidebar">
+    <!-- sidebar: style can be found in sidebar.less -->
+    <section class="sidebar">
+      <!-- Sidebar user panel -->
+      <div class="user-panel">
+        <div class="pull-left image">
+          <img src="{{ MEDIA_URL }}{{ user.profil.photo.url }}" class="img-circle" alt="User Image">
+        </div>
+        <div class="pull-left info">
+          <p>{{ user.last_name }}</p>
+          <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
+          <p><small>{{ user.profil.fonction }}</small></p>
+        </div>
+      </div>
+
+      <!-- sidebar menu: : style can be found in sidebar.less -->
+      <ul class="sidebar-menu">
+        <li class="header" style="color:orange"><center><h4>PROFILS</h4></center></li>
+        <li class="active treeview">
+          <a href="#">
+            <i class="fa fa-dashboard"></i> <span>Menu des Profils</span> <i class="fa fa-angle-left pull-right"></i>
+          </a>
+          <ul class="treeview-menu">
+            <li class="active"><a href="{% url 'reparation:accueil' %}"><i class="fa fa-table"></i>Profils</a></li>
+            <li><a href="{% url 'reparation:reparation_creer' %}"><i class="fa fa-pencil"></i>Ajouter un profil</a></li>
+          </ul>
+        </li>
+
+        <li class="treeview">
+          <a href="#">
+            <i class="fa fa-pie-chart"></i>
+            <span>Tableau de bord</span>
+            <i class="fa fa-angle-left pull-right"></i>
+          </a>
+          <ul class="treeview-menu">
+            <li><a href="{% url 'tableaubord:accueil' %}"><i class="fa fa-table"></i>Tableau de bord général</a></li>
+            <li><a href="{% url 'tableaubord:vehicule_tableaubord' %}"><i class="fa fa-car"></i>Véhicules</a></li>
+            <li><a href="{% url 'tableaubord:chauffeur_tableaubord' %}"><i class="fa fa-users"></i>Chauffeurs</a></li> 
+            <li><a href="{% url 'tableaubord:carburant_tableaubord' %}"><i class="fa fa-users"></i>Carburant</a></li>       
+            <li><a href="{% url 'tableaubord:entretien_tableaubord' %}"><i class="fa fa-table"></i>Entretiens</a></li>
+            <li><a href="{% url 'tableaubord:reparation_tableaubord' %}"><i class="fa fa-table"></i>Réparations</a></li>
+          </ul>
+        </li>
+
+        <li class="treeview">
+          <a href="#">
+            <i class="fa fa-laptop"></i>
+            <span>Commandes</span>
+            <i class="fa fa-angle-left pull-right"></i>
+          </a>
+          <ul class="treeview-menu">
+            <li><a href="{% url 'commande:accueil' %}"><i class="fa fa-table"></i>Commandes</a></li>
+            <li><a href="{% url 'commande:commande_creer' %}"><i class="fa fa-table"></i>Ajouter une commande</a></li>
+          </ul>
+        </li>
+
+      
+        <li class="treeview">
+          <a href="#">
+            <i class="fa fa-laptop"></i>
+            <span>OT</span>
+            <i class="fa fa-angle-left pull-right"></i>
+          </a>
+          <ul class="treeview-menu">
+            <li><a href="{% url 'ordretransport:accueil' %}"><i class="fa fa-table"></i>Ordres de transports</a></li>
+            <li><a href="{% url 'ordretransport:ordretransport_creer' %}"><i class="fa fa-table"></i>Ajouter un OT</a></li>
+          </ul>
+        </li>
+
+
+        <li class="treeview">
+          <a href="#">
+            <i class="fa fa-edit"></i> <span>Facturation</span>
+            <i class="fa fa-angle-left pull-right"></i>
+          </a>
+          <ul class="treeview-menu">
+            <li><a href="{% url 'facturation:accueil' %}"><i class="fa fa-table"></i>Facturation</a></li>
+            <li><a href="{% url 'facturation:facturation_situation_ca' %}"><i class="fa fa-table"></i>Situation du Chiffre d'affaires</a></li>
+            <li><a href="{% url 'facturation:facturation_situation_impaye' %}"><i class="fa fa-table"></i>Situation des impayés...</a></li>
+            <li><a href="{% url 'facturation:facturation_creer' %}"><i class="fa fa-table"></i>Ajouter une facture</a></li>
+            <li><a href="{% url 'devis:accueil' %}"><i class="fa fa-table"></i>Devis</a></li> 
+            <li><a href="{% url 'devis:devis_creer' %}"><i class="fa fa-table"></i>Créer un devis</a></li>  
+          </ul>
+        </li>
+
+
+        <li class="treeview">
+          <a href="#">
+            <i class="fa fa-table"></i> <span>Règlements</span>
+            <i class="fa fa-angle-left pull-right"></i>
+          </a>
+          <ul class="treeview-menu">
+            <li><a href="{% url 'reglement:accueil' %}"><i class="fa fa-table"></i>Règlements</a></li>
+            <li><a href="{% url 'reglement:reglement_creer' %}"><i class="fa fa-table"></i>Ajouter un règlement</a></li>
+          </ul>
+        </li>
+
+        <li class="treeview">
+          <a href="#">
+            <i class="fa fa-table"></i> <span>Carburant</span>
+            <i class="fa fa-angle-left pull-right"></i>
+          </a>
+          <ul class="treeview-menu">
+            <li><a href="{% url 'carburant:accueil' %}"><i class="fa fa-table"></i>Carburant</a></li>
+            <li><a href="{% url 'carburant:carburant_creer' %}"><i class="fa fa-table"></i>Ajouter une prise de carburant</a></li>
+          </ul>
+        </li>
+
+        <li class="treeview">
+          <a href="#">
+            <i class="fa fa-table"></i> <span>Réparations</span>
+            <i class="fa fa-angle-left pull-right"></i>
+          </a>
+          <ul class="treeview-menu">
+            <li><a href="{% url 'reparation:accueil' %}"><i class="fa fa-table"></i>Réparation</a></li>
+            <li><a href="{% url 'reparation:reparation_creer' %}"><i class="fa fa-table"></i>Ajouter une réparation</a></li>
+          </ul>
+        </li>
+
+        <li class="treeview">
+          <a href="#">
+            <i class="fa fa-table"></i> <span>Entretiens</span>
+            <i class="fa fa-angle-left pull-right"></i>
+          </a>
+          <ul class="treeview-menu">
+            <li><a href="{% url 'entretien:accueil' %}"><i class="fa fa-table"></i>Entretiens</a></li>
+            <li><a href="{% url 'entretien:entretien_creer' %}"><i class="fa fa-table"></i>Ajouter un entretien</a></li>
+          </ul>
+        </li>
+
+
+        <li class="treeview">
+          <a href="#">
+            <i class="fa fa-table"></i> <span>Alertes</span>
+            <i class="fa fa-angle-left pull-right"></i>
+          </a>
+          <ul class="treeview-menu">
+            <li><a href="{% url 'alerte:accueil' %}"><i class="fa fa-table"></i>Alertes</a></li>
+            <li><a href="{% url 'alerte:alerte_creer' %}"><i class="fa fa-table"></i>Ajouter une alerte</a></li>
+            <li><a href="{#% url 'parametre:alerte_creer' %#}"><i class="fa fa-table"></i>Délai alerte Véhicule</a></li>
+            <li><a href="{#% url 'parametre:alerte_creer' %#}"><i class="fa fa-table"></i>Délai alerte Chauffeur</a></li>
+            <li><a href="{#% url 'parametre:alerte_creer' %#}"><i class="fa fa-table"></i>Délai alerte Entretien</a></li>
+          </ul>
+        </li>
+
+        <li class="treeview">
+          <a href="#">
+            <i class="fa fa-table"></i> <span>Marchandises ou Services</span>
+            <i class="fa fa-angle-left pull-right"></i>
+          </a>
+          <ul class="treeview-menu">
+            <li><a href="{% url 'marchandise:accueil' %}"><i class="fa fa-table"></i>Marchandises</a></li>
+            <li><a href="{% url 'marchandise:marchandise_creer' %}"><i class="fa fa-table"></i>Ajouter une marchandise</a></li>
+          </ul>
+        </li>
+
+        <li class="treeview">
+          <a href="#">
+            <i class="fa fa-table"></i> <span>Véhicules</span>
+            <i class="fa fa-angle-left pull-right"></i>
+          </a>
+          <ul class="treeview-menu">
+            <li><a href="{% url 'vehicule:accueil' %}"><i class="fa fa-table"></i>Véhicules</a></li>
+            <li><a href="{% url 'vehicule:vehicule_creer' %}"><i class="fa fa-table"></i>Ajouter un véhicule</a></li>
+          </ul>
+        </li>
+
+        <li class="treeview">
+          <a href="#">
+            <i class="fa fa-table"></i> <span>Chauffeurs</span>
+            <i class="fa fa-angle-left pull-right"></i>
+          </a>
+          <ul class="treeview-menu">
+            <li><a href="{% url 'chauffeur:accueil' %}"><i class="fa fa-table"></i>Chauffeurs</a></li>
+            <li><a href="{% url 'chauffeur:chauffeur_creer' %}"><i class="fa fa-table"></i>Ajouter un chauffeur</a></li>
+          </ul>
+        </li>
+
+        <li class="treeview">
+          <a href="#">
+            <i class="fa fa-table"></i> <span>Clients</span>
+            <i class="fa fa-angle-left pull-right"></i>
+          </a>
+          <ul class="treeview-menu">
+            <li><a href="{% url 'client:accueil' %}"><i class="fa fa-table"></i>Clients</a></li>
+            <li><a href="{% url 'client:client_creer' %}"><i class="fa fa-table"></i>Ajouter un client</a></li>
+          </ul>
+        </li>
+
+        <li class="header"></li>
+
+        <li class="treeview">
+          <a href="#">
+            <i class="fa fa-table"></i> <span>Paramètes</span>
+            <i class="fa fa-angle-left pull-right"></i>
+          </a>
+          <ul class="treeview-menu">
+            <li><a href="{% url 'parametre:index' %}"><i class="fa fa-table"></i>Paramêtres</a></li>
+            <li><a href="{% url 'parametre:login' %}"><i class="fa fa-table"></i>Logout</a></li>
+          </ul>
+        </li>
+
+
+        {% comment %}
+        <li>
+          <a href="pages/calendar.html">
+            <i class="fa fa-calendar"></i> <span>Calendar</span>
+            <small class="label pull-right bg-red">3</small>
+          </a>
+        </li>
+        <li>
+          <a href="pages/mailbox/mailbox.html">
+            <i class="fa fa-envelope"></i> <span>Mailbox</span>
+            <small class="label pull-right bg-yellow">12</small>
+          </a>
+        </li>
+        <li class="treeview">
+          <a href="#">
+            <i class="fa fa-folder"></i> <span>Examples</span>
+            <i class="fa fa-angle-left pull-right"></i>
+          </a>
+          <ul class="treeview-menu">
+            <li><a href="pages/examples/invoice.html"><i class="fa fa-circle-o"></i> Invoice</a></li>
+            <li><a href="pages/examples/profile.html"><i class="fa fa-circle-o"></i> Profile</a></li>
+            <li><a href="pages/examples/login.html"><i class="fa fa-circle-o"></i> Login</a></li>
+            <li><a href="pages/examples/register.html"><i class="fa fa-circle-o"></i> Register</a></li>
+            <li><a href="pages/examples/lockscreen.html"><i class="fa fa-circle-o"></i> Lockscreen</a></li>
+            <li><a href="pages/examples/404.html"><i class="fa fa-circle-o"></i> 404 Error</a></li>
+            <li><a href="pages/examples/500.html"><i class="fa fa-circle-o"></i> 500 Error</a></li>
+            <li><a href="pages/examples/blank.html"><i class="fa fa-circle-o"></i> Blank Page</a></li>
+            <li><a href="pages/examples/pace.html"><i class="fa fa-circle-o"></i> Pace Page</a></li>
+          </ul>
+        </li>
+        <li class="treeview">
+          <a href="#">
+            <i class="fa fa-share"></i> <span>Multilevel</span>
+            <i class="fa fa-angle-left pull-right"></i>
+          </a>
+          <ul class="treeview-menu">
+            <li><a href="#"><i class="fa fa-circle-o"></i> Level One</a></li>
+            <li>
+              <a href="#"><i class="fa fa-circle-o"></i> Level One <i class="fa fa-angle-left pull-right"></i></a>
+              <ul class="treeview-menu">
+                <li><a href="#"><i class="fa fa-circle-o"></i> Level Two</a></li>
+                <li>
+                  <a href="#"><i class="fa fa-circle-o"></i> Level Two <i class="fa fa-angle-left pull-right"></i></a>
+                  <ul class="treeview-menu">
+                    <li><a href="#"><i class="fa fa-circle-o"></i> Level Three</a></li>
+                    <li><a href="#"><i class="fa fa-circle-o"></i> Level Three</a></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li><a href="#"><i class="fa fa-circle-o"></i> Level One</a></li>
+          </ul>
+        </li>
+        <li><a href="documentation/index.html"><i class="fa fa-book"></i> <span>Documentation</span></a></li>
+        <li class="header">LABELS</li>
+        <li><a href="#"><i class="fa fa-circle-o text-red"></i> <span>Important</span></a></li>
+        <li><a href="#"><i class="fa fa-circle-o text-yellow"></i> <span>Warning</span></a></li>
+        <li><a href="#"><i class="fa fa-circle-o text-aqua"></i> <span>Information</span></a></li>
+        {% endcomment %}
+
+      </ul>
+    </section>
+    <!-- /.sidebar -->
+  </aside>      
+{% endblock aside %}    
+
+
+{% block content %}    
+<section class="content-header">
+  <h1>Profils utilisateurs</h1>
+  <ol class="breadcrumb">
+     <a class="btn btn-primary" href="{% url 'parametre:profil_creer' %}"><span class="fa fa-plus"> Utilisateurs</span></a>
+  </ol>
+</section>
+
+<!-- Main content -->
+<section class="content">
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="box box-primary">
+        <div class="box-header"></div>
+        <div class="box-body">
+          <table id="table1" class="table table-bordered table-striped" cellspacing="0" width="100%">
+            <thead>
+              <tr bgcolor="#bee5eb">
+                <th><center>Photo</center></th>
+                <th><center>Nom & Prénoms</center></th>
+                <th><center>Cellulaire</center></th>
+                <th><center>E-mail</center></th>
+                <th><center>Groupe</center></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for i in profil_list %}
+                <tr>
+                  <td align="center">
+                    {% if i.photo %}
+                      <img src="{{ MEDIA_URL }}{{ i.photo.url }}" width="50" height="50" class="img-circle" alt="User Image">
+                    {% else %} 
+                      <img class="img-circle" src="{% static 'images/user.png' %}" width="50" alt="User Avatar">
+                    {% endif %}
+                  </td>
+                  <td><a href="{% url 'parametre:profil_modifier' pk=i.id %}">{{ i.civilite }} {{ i.nom.upper }} {% if i.prenoms %} {{ i.prenoms.title }} {% endif %}</a></td>                 
+                  <td>{% if i.cellulaire %} {{ i.cellulaire }}  {% endif %}</td>
+                  <td>{% if i.email %} {{ i.email }} {% endif %} </td>
+                  <td>{{ i.groupe }}</td>
+                </tr>
+              {% endfor %}    
+            </tbody>
+          </table>    
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="{% static 'js/jquery-3.5.1.js' %}"></script>
+<script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+
+<style type="text/css">
+  th, td {
+    white-space: nowrap;
+}
+</style>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('#table1').DataTable({
+      'paging'      : true,
+      'lengthChange': false,
+      "lengthMenu"  : [[15, 50, -1], [15, 50, "All"]],
+      'searching'   : true,
+      'ordering'    : false,
+      'info'        : true,
+      'autoWidth'   : true,
+      'scrollX'     : true,
+      'scrollY'     : '400',
+      'scrollCollapse' : true,  
+
+      dom: 'Bfrtip',
+            buttons: ['print', 'excel', 'pdf', 'csv'
+
+      ],
+
+      "language": {
+        "sProcessing": "Traitement en cours ...",
+        "sLengthMenu": "Afficher _MENU_ lignes",
+        "sZeroRecords": "Aucun résultat trouvé",
+        "sEmptyTable": "Aucune donnée disponible",
+        "sInfo": "Lignes _START_ à _END_ sur _TOTAL_",
+        "sInfoEmpty": "Aucune ligne affichée",
+        "sInfoFiltered": "(Filtrer un maximum de_MAX_)",
+        "sInfoPostFix": "",
+        "sSearch": "Chercher:",
+        "sUrl": "",
+        "sInfoThousands": ",",
+        "sLoadingRecords": "Chargement...",
+        "oPaginate": {
+          "sFirst": "Premier", "sLast": "Dernier", "sNext": "Suivant", "sPrevious": "Précédent"
+      },
+        "oAria": {
+          "sSortAscending": ": Trier par ordre croissant", "sSortDescending": ": Trier par ordre décroissant"
+      }
+    }
+  });
+ });
+</script>
+{% endblock content %}

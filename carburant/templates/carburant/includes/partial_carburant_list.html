@@ -1,0 +1,27 @@
+{% for carburant in carburants %}
+  <tr>
+    <td>{{ carburant.date_prise|date:"d M y" }}</td>
+    <td>{{ carburant.type_carburant }}</td>
+    <td>{{ carburant.vehicule.immatriculation }}</td>
+    <td align="right">{{ carburant.quantite }}</td>
+    <td align="right">{{ carburant.kilometrage }}</td>
+    <td>{{ carburant.chauffeur }}</td>
+
+    <td style="width:200px">
+      <button type="button"
+              class="btn btn-warning btn-sm js-update-carburant" data-toggle="modal" data-target="#modal-carburant"
+              data-url="{% url 'carburant:carburant_update' carburant.id %}">
+        <span class="glyphicon glyphicon-pencil"></span> Modifier
+      </button>
+      <button type="button"
+              class="btn btn-danger btn-sm js-delete-carburant" data-toggle="modal" data-target="#modal-carburant"
+              data-url="{% url 'carburant:carburant_delete' carburant.id %}">
+        <span class="glyphicon glyphicon-trash"></span> Supprimer
+      </button>
+    </td>
+  </tr>
+{% empty %}
+  <tr>
+    <td colspan="8" class="text-center bg-warning">No carburant</td>
+  </tr>
+{% endfor %}

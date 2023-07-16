@@ -1,0 +1,32 @@
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
+
+{% if ordretransport_list %}
+  {% for i in ordretransport_list %}
+    <tr>
+      <td>{{ i.date_ot|date:"d M y" }}</td>
+      <td>{{ i.numero_ot }}</td>
+      <td>{{ i.commande.numero_dossier }}</td>
+      <td>{{ i.commande.client }}</td>
+      <td>{{ i.qui_enleve }}</td>
+      <td align="right">{{ i.montant_total_ht|floatformat:"0" }}</td>  
+      <td align="center"><a href="{% url 'enlevement:enlevement_lister' pk=i.id %}">{{ i.enlevement_set.all|length }} Enlèvement(s)</a></td>
+      <td>
+      <a href="{% url 'ordretransport:ordretransport_modifier' pk=i.id %}"><span class="btn btn-xs btn-primary">Modifier</span></a>
+      <a href="{% url 'ordretransport:ordretransport_imprimer' pk=i.id %}" target="_blank"><span class="btn btn-xs btn-success"> Imprimer OT</span></a>
+
+      {% if user.is_superuser %}
+      <button type="button"
+              class="btn btn-xs btn-danger btn-sm js-delete-ordretransport" data-toggle="modal" data-target="#modal-ordretransport"
+              data-url="{% url 'ordretransport:ordretransport_delete' pk=i.id %}">
+        <span class="glyphicon glyphicon-trash"></span> Supprimer
+      </button>
+      {% endif %}
+      <span class="btn btn-xs btn-primary" id="id_montant" style="display: none;">{{ montant_total|floatformat:"0" }}</span>
+  	  </td>
+    </tr>
+  {% endfor %}    
+{% else %}
+  <span class="btn btn-xs btn-primary" id="id_montant" style="display: none;">{{ montant_total|floatformat:"0" }}</span>
+{% endif %}

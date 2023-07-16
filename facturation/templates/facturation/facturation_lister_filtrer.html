@@ -1,0 +1,42 @@
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
+
+
+{% if facturation_list %}
+ {% for i in facturation_list %}
+    <tr>
+      <td>{{ i.date_facture|date:"d M y" }}</td>
+      <td>
+        {% if i.etat_facture == 'Soldée' %}
+          <span class="pull-left badge bg-green">{{ i.etat_facture }}</span>
+        {% else %}
+          <span class="pull-left badge bg-danger">{{ i.etat_facture }}</span>
+        {% endif %}  
+      </td>
+      <td>{{ i.numero_facture }}</td>
+      <td>{{ i.commande.numero_dossier }}</td>
+      <td>{{ i.commande.client }}</td>
+      <td align="right">{{ i.facture_commande.montant_total_ht }}</td>
+      <td align="right">{{ i.facture_commande.montant_tva|floatformat:'0' }}</td>
+      <td align="right">{{ i.facture_commande.montant_total_ttc|floatformat:'0' }}</td>
+      <td align="right">{{ i.facture_commande.montant_carburant|add:i.debours|add:i.avance|floatformat:"0" }}</td>
+      <td align="right">{{ i.facture_commande.montant_net }}</td>
+      <td>
+      <a href="{% url 'facturation:facturation_modifier' pk=i.id %}"><span class="btn btn-sm btn-primary"><span class="glyphicon glyphicon-pencil"></span>  Modifier</span></a>
+      <a href="{% url 'facturation:facturation_imprimer' pk=i.id %}" target="_blank"><span class="btn btn-sm btn-success"> <span class="glyphicon glyphicon-print"></span>  Imprimer</span></a>
+      <a href="{% url 'facturation:facturation_imprimer_carburant' pk=i.id %}" target="_blank"><span class="btn btn-sm btn-success"><span class="glyphicon glyphicon-print"></span> Imprimer carnurant</span></a>
+      {% if user.is_superuser %}
+      <button type="button"
+              class="btn btn-danger btn-sm js-delete-facturation" data-toggle="modal" data-target="#modal-facturation"
+              data-url="{% url 'facturation:facturation_delete' pk=i.id %}">
+        <span class="glyphicon glyphicon-trash"></span> Supprimer
+      </button>
+      {% endif %}
+      <span class="btn btn-xs btn-primary" id="id_html_footer" style="display: none;">{{ html_footer }}</span>
+  	  </td>
+    </tr>
+  {% endfor %} 
+{% else %}
+  <span class="btn btn-xs btn-primary" id="id_html_footer" style="display: none;">{{ html_footer }}</span>
+{% endif %}

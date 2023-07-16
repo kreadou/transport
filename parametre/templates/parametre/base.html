@@ -1,0 +1,68 @@
+<!DOCTYPE>
+{% load static %}
+
+<html  xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr">
+  <head>
+    <title>Transport</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- Bootstrap 3.3.7 <link rel="stylesheet" href="{% static 'bower_components/bootstrap/dist/css/bootstrap.min.css' %}">-->
+    <link rel="stylesheet" href="{% static 'parametre/css/bootstrap.min.css' %}">
+       <!-- DataTables -->
+    <link rel="stylesheet" href="{% static 'parametre/css/dataTables.bootstrap.min.css' %}">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="{% static 'parametre/css/font-awesome.min.css' %}">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="{% static 'parametre/css/ionicons.min.css' %}">
+    <!-- jvectormap -->
+    <link rel="stylesheet" href="{% static 'parametre/css/jquery-jvectormap.css' %}">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="{% static 'parametre/css/AdminLTE.min.css' %}">
+    <!-- AdminLTE Skins. Choose a skin from the css/skins
+         folder instead of downloading all of them to reduce the load. -->
+    <link rel="stylesheet" href="{% static 'parametre/css/_all-skins.min.css' %}">
+  
+     <!--<link rel="stylesheet" href="{% static 'css/dataTables.css' %}"> -->
+    <link rel="stylesheet" href="{% static 'parametre/css/jquery.dataTables.min.css' %}">
+    <link rel="stylesheet" href="{% static 'parametre/css/buttons.dataTables.min.css' %}">
+  </head>
+
+<body class="hold-transition skin-green layout-top-nav">
+  <div class="wrapper">
+    {% block header %}
+      {#% include "header.html" %#}
+    {% endblock header %}
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
+        <div class="container">
+          {% block content %}
+          {% endblock content %}
+        </div>
+      </div>
+    {% block footer %}
+      {#% include "footer.html" %#}
+    {% endblock footer %}
+  </div>
+
+      <!-- jQuery 3 -->
+      <script src="{% static 'js/jquery.min.js' %}"></script>
+      <!-- Bootstrap 3.3.7 -->
+      <script src="{% static 'js/bootstrap.min.js' %}"></script>
+      <!-- DataTables -->
+      <script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+      <script src="{% static 'js/dataTables.bootstrap.min.js' %}"></script>
+      <!-- AdminLTE App -->
+      <script src="{% static 'js/adminlte.min.js' %}"></script>
+
+      <script src="{% static 'js/jquery-3.5.1.js' %}"></script>
+      <script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+      <script src="{% static 'js/dataTables.buttons.min.js' %}"></script>
+      <script src="{% static 'js/jszip.min.js' %}"></script>
+      <script src="{% static 'js/pdfmake.min.js' %}"></script>
+      <script src="{% static 'js/vfs_fonts.js' %}"></script>
+      <script src="{% static 'js/buttons.html5.min.js' %}"></script>
+      <script src="{% static 'js/buttons.print.min.js' %}"></script>
+  </body>
+</html>

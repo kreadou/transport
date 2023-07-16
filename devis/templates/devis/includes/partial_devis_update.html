@@ -1,0 +1,16 @@
+<form method="post" action="{% url 'carburant:carburant_update' form.instance.pk %}" class="js-carburant-update-form">
+  {% csrf_token %}
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+    <h4 class="modal-title">Modification de la prise du carburant</h4>
+  </div>
+  <div class="modal-body">
+    {% include 'carburant/includes/partial_carburant_form.html' %}
+  </div>
+  <div class="modal-footer">
+    <button type="submit" class="btn btn-primary">Enregistrer</button>   
+    <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+  </div>
+</form>

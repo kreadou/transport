@@ -1,0 +1,317 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
+{% load crispy_forms_tags %}
+{% load has_group %}
+
+{% block aside %}  
+   {% include "tableaubord/aside.html" %}
+{% endblock aside %}    
+
+{% block footer %}     
+{% endblock footer %} 
+
+{% block content %}    
+<section class="content-header">
+  <h1>Tableau de bord des chauffeurs</h1>
+  <ol class="breadcrumb">
+   </ol>
+</section>
+
+<!-- Main content -->
+<section class="content">
+  <div class="row">
+       <!-- /.info-box-content 
+      <div class="col-12 col-sm-6 col-md-3">
+        <div class="info-box">
+          <span class="info-box-icon bg-aqua"><i class="fa fa-users"></i></span>
+          <div class="info-box-content">
+            <span class="info-box-text">CHAUFFEURS</span>
+            <span class="info-box-number">
+              {{ chauffeur_list.count |floatformat:"0" }}
+              <small><br></small>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-3">
+        <div class="info-box">
+          <span class="info-box-icon bg-red"><i class="fa fa-google-plus"></i></span>
+
+          <div class="info-box-content">
+            <span class="info-box-text">Poids net total</span>
+            <span class="info-box-number">
+              {{ poids_net_total|floatformat:"3" }}
+              <small>Tonne</small>
+            </span>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="col-12 col-sm-6 col-md-3">
+        <div class="info-box">
+          <span class="info-box-icon bg-green"><i class="fas fa-gas-pump"></i></span>
+
+          <div class="info-box-content">
+            <span class="info-box-text">Conso. carburant</span>
+            <span class="info-box-number">
+              {{quantite_total|floatformat:"2"}}
+              <small>Litre</small>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-3">
+        <div class="info-box">
+          <span class="info-box-icon bg-yellow"><i class="fas fa-bus"></i></span>
+
+          <div class="info-box-content">
+            <span class="info-box-text">Total voyages</span>
+            <span class="info-box-number">
+              {{ voyage_total|floatformat:"0" }}
+              <small></small>
+            </span>
+          </div>
+        </div>
+      </div>
+    -->
+  </div>
+
+
+
+<div class="row">
+
+    <div class="col-lg-6">
+      <div class="box box-success">
+        <div class="box-header"><h3>Alertes Pièces d'Identités</h3></div>
+        <div class="box-body">
+          <table id="table1" class="table table-bordered table-striped" cellspacing="0" width="100%">
+            <thead>
+              <tr bgcolor="#bee5eb">
+                <th><center>Type de pièce</center></th>
+                <th><center>Matricule</center></th>
+                <th><center>Nom & Prénoms</center></th>
+                <th><center>Expiration</center></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for i in chauffeur_list %}
+                {% if i.piece <= 0 %}
+                <tr>
+                  <td align="center">{{ i.get_nature_piece_display }}</td>
+                  <td align="center">{{ i.matricule }}</td>
+                  <td>{{ i.nom }} {{ i.prenoms.title }}</td>
+                  <td align="right">{{ i.piece }}</td>
+                </tr>
+                {% endif %}
+              {% endfor %}    
+            </tbody>
+          </table>
+        </div>
+      </div> 
+    </div>
+
+
+    <div class="col-lg-6">
+      <div class="box box-success">
+        <div class="box-header"><h3>Alertes Permis de conduire</h3></div>
+        <div class="box-body">
+          <table id="table2" class="table table-bordered table-striped" cellspacing="0" width="100%">
+            <thead>
+              <tr bgcolor="#bee5eb">
+                <th><center>Type de permis</center></th>
+                <th><center>Matricule</center></th>
+                <th><center>Nom & Prénoms</center></th>
+                <th><center>Expiration</center></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for i in chauffeur_list %}
+              {% if i.permis <= 0 %}
+                <tr>
+                  <td align="center">{{ i.get_permis_categorie_display }}</td>
+                  <td align="center">{{ i.matricule }}</td>
+                  <td>{{ i.nom }} {{ i.prenoms.title }}</td>
+                  <td align="right">{{ i.permis }}</td>
+                </tr>
+                {% endif %}
+              {% endfor %}    
+            </tbody>
+          </table>
+        </div>
+      </div> 
+    </div>
+
+    <div class="col-lg-6">
+      <div class="box box-success">
+        <div class="box-header"><h3>Alertes Cartes d'accès au Port</h3></div>
+        <div class="box-body">
+          <table id="table3" class="table table-bordered table-striped" cellspacing="0" width="100%">
+            <thead>
+              <tr bgcolor="#bee5eb">
+                <th><center>Type de permis</center></th>
+                <th><center>Matricule</center></th>
+                <th><center>Nom & Prénoms</center></th>
+                <th><center>Expiration</center></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for i in chauffeur_list %}
+              {% if i.acces <= 0 %}
+                <tr>
+                  <td align="center">{{ i.get_permis_categorie_display }}</td>
+                  <td align="center">{{ i.matricule }}</td>
+                  <td>{{ i.nom }} {{ i.prenoms.title }}</td>
+                  <td align="right">{{ i.acces }}</td>
+                </tr>
+                {% endif %}
+              {% endfor %}    
+            </tbody>
+          </table>
+        </div>
+      </div> 
+    </div>
+
+</div>
+
+<script src="{% static 'js/jquery-3.3.1.js' %}"></script>
+<script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+
+<style type="text/css">
+  th, td {
+    white-space: nowrap;
+}
+</style>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('#table1').DataTable({
+      'paging'      : false,
+      'lengthChange': false,
+      "lengthMenu"  : [[15, 50, -1], [15, 50, "All"]],
+      'searching'   : false,
+      'ordering'    : false,
+      'info'        : false,
+      'autoWidth'   : true,
+      'scrollX'     : true,
+      'scrollY'     : '400',
+      'scrollCollapse' : true,  
+
+      dom: 'Bfrtip',
+            buttons: ['print', 'excel', 'pdf', 'csv'
+
+      ],
+
+      "language": {
+        "sProcessing": "Traitement en cours ...",
+        "sLengthMenu": "Afficher _MENU_ lignes",
+        "sZeroRecords": "Aucun résultat trouvé",
+        "sEmptyTable": "Aucune donnée disponible",
+        "sInfo": "Lignes _START_ à _END_ sur _TOTAL_",
+        "sInfoEmpty": "Aucune ligne affichée",
+        "sInfoFiltered": "(Filtrer un maximum de_MAX_)",
+        "sInfoPostFix": "",
+        "sSearch": "Chercher:",
+        "sUrl": "",
+        "sInfoThousands": ",",
+        "sLoadingRecords": "Chargement...",
+        "oPaginate": {
+          "sFirst": "Premier", "sLast": "Dernier", "sNext": "Suivant", "sPrevious": "Précédent"
+      },
+        "oAria": {
+          "sSortAscending": ": Trier par ordre croissant", "sSortDescending": ": Trier par ordre décroissant"
+      }
+    }
+  });
+
+    $('#table2').DataTable({
+      'paging'      : false,
+      'lengthChange': false,
+      "lengthMenu"  : [[15, 50, -1], [15, 50, "All"]],
+      'searching'   : false,
+      'ordering'    : false,
+      'info'        : false,
+      'autoWidth'   : true,
+      'scrollX'     : true,
+      'scrollY'     : '400',
+      'scrollCollapse' : true,  
+
+      dom: 'Bfrtip',
+            buttons: ['print', 'excel', 'pdf', 'csv'
+
+      ],
+
+      "language": {
+        "sProcessing": "Traitement en cours ...",
+        "sLengthMenu": "Afficher _MENU_ lignes",
+        "sZeroRecords": "Aucun résultat trouvé",
+        "sEmptyTable": "Aucune donnée disponible",
+        "sInfo": "Lignes _START_ à _END_ sur _TOTAL_",
+        "sInfoEmpty": "Aucune ligne affichée",
+        "sInfoFiltered": "(Filtrer un maximum de_MAX_)",
+        "sInfoPostFix": "",
+        "sSearch": "Chercher:",
+        "sUrl": "",
+        "sInfoThousands": ",",
+        "sLoadingRecords": "Chargement...",
+        "oPaginate": {
+          "sFirst": "Premier", "sLast": "Dernier", "sNext": "Suivant", "sPrevious": "Précédent"
+      },
+        "oAria": {
+          "sSortAscending": ": Trier par ordre croissant", "sSortDescending": ": Trier par ordre décroissant"
+      }
+    }
+  });
+
+    $('#table3').DataTable({
+      'paging'      : false,
+      'lengthChange': false,
+      "lengthMenu"  : [[15, 50, -1], [15, 50, "All"]],
+      'searching'   : false,
+      'ordering'    : false,
+      'info'        : false,
+      'autoWidth'   : true,
+      'scrollX'     : true,
+      'scrollY'     : '400',
+      'scrollCollapse' : true,  
+
+      dom: 'Bfrtip',
+            buttons: ['print', 'excel', 'pdf', 'csv'
+
+      ],
+
+      "language": {
+        "sProcessing": "Traitement en cours ...",
+        "sLengthMenu": "Afficher _MENU_ lignes",
+        "sZeroRecords": "Aucun résultat trouvé",
+        "sEmptyTable": "Aucune donnée disponible",
+        "sInfo": "Lignes _START_ à _END_ sur _TOTAL_",
+        "sInfoEmpty": "Aucune ligne affichée",
+        "sInfoFiltered": "(Filtrer un maximum de_MAX_)",
+        "sInfoPostFix": "",
+        "sSearch": "Chercher:",
+        "sUrl": "",
+        "sInfoThousands": ",",
+        "sLoadingRecords": "Chargement...",
+        "oPaginate": {
+          "sFirst": "Premier", "sLast": "Dernier", "sNext": "Suivant", "sPrevious": "Précédent"
+      },
+        "oAria": {
+          "sSortAscending": ": Trier par ordre croissant", "sSortDescending": ": Trier par ordre décroissant"
+      }
+    }
+  });
+
+
+
+
+
+ });
+</script>
+
+
+{% endblock content %}

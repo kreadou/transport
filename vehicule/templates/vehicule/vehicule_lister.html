@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
+{% load has_group %}
+
+{% block aside %}
+  {% include "vehicule/aside.html" %}        
+{% endblock aside %}
+
+{% block content %}    
+<section class="content-header">
+  <h1>Véhicules</h1>
+  <ol class="breadcrumb">
+    <a href="{% url 'vehicule:vehicule_creer' %}"><span class="btn btn-xs btn-primary"><span class="glyphicon glyphicon-plus"></span> Ajouter un véhicule</span></a>
+  </ol>
+</section>
+
+<!-- Main content -->
+<section class="content">
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="box box-primary">
+        <div class="box-header"></div>
+        <div class="box-body">
+          <table id="table1" class="table table-bordered table-striped" cellspacing="0" width="100%">
+            <thead>
+              <tr bgcolor="#E67E30">
+    		        <th>Immatriculation</th>
+    		        <th>Marque</th>
+    		        <th>Modèle</th>
+    		        <th>Type</th>
+    		        <th>Attelage</th>
+    		        <th>Assignation</th>
+    		        <th>Utilisation</th>
+                <th>PTAC</th>
+                <th>PV</th>
+                <th>PCU</th>
+                <th>GPS</th>
+    		        <th><center>Actions</center></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for i in vehicule_list %}
+                <tr>
+                  <td>{{ i.immatriculation }}</td>
+                  <td>{{ i.marque }}</td>
+                  <td>{% if i.modele %} {{ i.modele }} {% endif %}</td>
+                  <td>{{ i.type_vehicule }}</td>
+			            <td>{{ i.attelage }}</td>
+                  <td>{{ i.assignation }}</td>
+                  <td>{{ i.mode_utilisation }}</td>
+                  <td align="right">{{ i.poids_ptac }}</td>
+                  <td align="right">{{ i.poids_vide }}</td>                  
+                  <td align="right">{{ i.poids_charge_utile }}</td>
+                  <td>{% if i.gps %} oui {% else %} non {% endif %}</td>
+                  <td>
+                  <a href="{% url 'vehicule:vehicule_modifier' pk=i.id %}"><span class="btn btn-sm btn-primary"><span class="glyphicon glyphicon-pencil"></span>  Modifier</span></a>
+                  <a href="{% url 'vehicule:imprimer_fiche' pk=i.id %}" target="_blank"><span class="btn btn-sm btn-success">  <span class="glyphicon glyphicon-print"></span>  Imprimer fiche</span></a> 
+                  {% if user.is_superuser %}
+                  <button type="button"
+                          class="btn btn-danger btn-sm js-delete-vehicule" data-toggle="modal" data-target="#modal-vehicule"
+                          data-url="{% url 'vehicule:vehicule_delete' pk=i.id %}">
+                    <span class="glyphicon glyphicon-trash"></span> Supprimer
+                  </button>
+                  {% endif %}
+              	  </td>
+                </tr>
+              {% endfor %}    
+            </tbody>
+          </table>    
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modal-vehicule">
+    <div class="modal-dialog">
+      <div class="modal-content">
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="{% static 'js/jquery-3.3.1.js' %}"></script>
+<script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+
+<style type="text/css">
+  th, td {
+    white-space: nowrap;
+}
+</style>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('#table1').DataTable({
+      'paging'      : true,
+      'lengthChange': false,
+      "lengthMenu"  : [[15, 50, -1], [15, 50, "All"]],
+      'searching'   : true,
+      'ordering'    : false,
+      'info'        : true,
+      'autoWidth'   : true,
+      'scrollX'     : true,
+      'scrollY'     : '400',
+      'scrollCollapse' : true,  
+
+      dom: 'Bfrtip',
+buttons: [
+          {
+            extend: 'print',
+            title: 'LISTE DES VEHICULES',
+            footer:true,
+            exportOptions: {
+              columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],              
+              format: {
+                    body: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 6 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    },
+                    footer: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 6 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    }
+                  }
+               },
+          },              
+
+
+          {
+            extend: 'excelHtml5',
+            text: 'Excel',
+            title: 'LISTE DES VEHICULES',
+            footer:true,
+            exportOptions: {
+              columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],              
+              format: {
+                    body: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 6 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    },
+
+                    footer: function(data, row, column, node) {              
+                        //return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data;
+                        //enfin  return column >= 4 && column <= 5 ? data.replace( /[$,.]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                        return column >= 5 && column <= 6 ? data.replace( /[&nbsp;]/g, '' ) : data.replace(/(&nbsp;|<([^>]+)>)/ig, "");
+                    }
+
+                  }
+                },
+          },
+
+      ],
+
+
+      "language": {
+        "sProcessing": "Traitement en cours ...",
+        "sLengthMenu": "Afficher _MENU_ lignes",
+        "sZeroRecords": "Aucun résultat trouvé",
+        "sEmptyTable": "Aucune donnée disponible",
+        "sInfo": "Lignes _START_ à _END_ sur _TOTAL_",
+        "sInfoEmpty": "Aucune ligne affichée",
+        "sInfoFiltered": "(Filtrer un maximum de_MAX_)",
+        "sInfoPostFix": "",
+        "sSearch": "Chercher:",
+        "sUrl": "",
+        "sInfoThousands": ",",
+        "sLoadingRecords": "Chargement...",
+        "oPaginate": {
+          "sFirst": "Premier", "sLast": "Dernier", "sNext": "Suivant", "sPrevious": "Précédent"
+      },
+        "oAria": {
+          "sSortAscending": ": Trier par ordre croissant", "sSortDescending": ": Trier par ordre décroissant"
+      }
+    }
+  });
+ });
+</script>
+
+<script type="text/javascript">
+
+$(function () {
+  var loadForm = function () {
+    var btn = $(this);
+    $.ajax({
+      url: btn.attr("data-url"),
+      type: 'get',
+      dataType: 'json',
+      beforeSend: function () {
+        $("#modal-vehicule .modal-content").html("");
+        //$("#modal-vehicule").modal("show");
+      },
+      success: function (data) {
+        $("#modal-vehicule .modal-content").html(data.html_form);
+      }
+    });
+  };
+
+  var saveForm = function () {
+    var form = $(this);
+    $.ajax({
+      url: form.attr("action"),
+      data: form.serialize(),
+      type: form.attr("method"),
+      dataType: 'json',
+      success: function (data) {
+        if (data.form_is_valid) {
+          $("#vehicule-table tbody").html(data.html_vehicule_list);
+          $("#modal-vehicule").modal("hide");
+        }
+        else {
+          $("#modal-vehicule .modal-content").html(data.html_form);
+        }
+      }
+    });
+    return false;
+  };
+  /* Binding */
+  // Delete vehicule
+  $("#table1").on("click", ".js-delete-vehicule", loadForm);
+  //$("#modal-vehicule").on("submit", ".js-vehicule-delete-form", saveForm);
+});
+
+</script>
+{% endblock content %}

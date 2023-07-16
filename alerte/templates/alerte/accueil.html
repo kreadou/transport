@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load has_group %}
+
+{% block content %}
+  <div class="box-body">
+    <div class="row">
+
+      {#% if user.is_superuser or request.user|has_group:"Administrateur" %#}
+       <a href="{% url 'vehicule:accueil' %}">
+      {#% endif %#}
+        <div class="col-md-4">
+          <!-- Widget: user widget style 1 -->
+          <div class="box box-widget widget-user">
+            <!-- Add the bg color to the header using any of the bg-* classes -->
+            <div class="widget-user-header bg-red">
+              <h3 class="widget-user-username">VEHICULES</h3>
+              <h5 class="widget-user-desc"></h5>
+            </div>
+            <div class="widget-user-image">
+              <img class="img-rectangle" src="{% static 'images/vehicule.png' %}" alt="User Avatar">
+            </div>
+            <div class="box-footer">
+              <div class="row">
+                <div class="col-sm-4 border-right">
+                  <div class="description-block">
+                    <h5 class="description-header"></h5>
+                    <span class="description-text"></span>
+                  </div>
+                  <!-- /.description-block -->
+                </div>
+                <!-- /.col -->
+                <div class="col-sm-4 border-right">
+                  <div class="description-block">
+                    <h5 class="description-header"></h5>
+                    <span class="description-text"></span>
+                  </div>
+                  <!-- /.description-block -->
+                </div>
+                <!-- /.col -->
+                <div class="col-sm-4">
+                  <div class="description-block">
+                    <h5 class="description-header"></h5>
+                    <span class="description-text"></span>
+                  </div>
+                  <!-- /.description-block -->
+                </div>
+                <!-- /.col -->
+              </div>
+              <!-- /.row -->
+            </div>
+          </div>
+          <!-- /.widget-user -->
+        </div>
+       {#% if user.is_superuser or request.user|has_group:"Administrateur" %#} 
+          </a>
+        {#% endif %#}
+
+
+
+      {#% if user.is_superuser or request.user|has_group:"Administrateur" %#}
+        <a href="{% url 'chauffeur:accueil' %}">
+      {#% endif %#} 
+      <div class="col-md-4">
+          <!-- Widget: user widget style 1 -->
+          <div class="box box-widget widget-user">
+            <!-- Add the bg color to the header using any of the bg-* classes -->
+            <div class="widget-user-header bg-teal">
+              <h3 class="widget-user-username">CHAUFFEURS</h3>
+              <h5 class="widget-user-desc"></h5>
+            </div>
+            <div class="widget-user-image">
+              <img class="img-rectangle" src="{% static 'images/chauffeur.png' %}" alt="User Avatar">
+            </div>
+            <div class="box-footer">
+              <div class="row">
+                <div class="col-sm-4 border-right">
+                  <div class="description-block">
+                    <h5 class="description-header"></h5>
+                    <span class="description-text"></span>
+                  </div>
+                  <!-- /.description-block -->
+                </div>
+                <!-- /.col -->
+                <div class="col-sm-4 border-right">
+                  <div class="description-block">
+                    <h5 class="description-header"></h5>
+                    <span class="description-text"></span>
+                  </div>
+                  <!-- /.description-block -->
+                </div>
+                <!-- /.col -->
+                <div class="col-sm-4">
+                  <div class="description-block">
+                    <h5 class="description-header"></h5>
+                    <span class="description-text"></span>
+                  </div>
+                  <!-- /.description-block -->
+                  </div>
+                <!-- /.col -->
+                 </div>
+                <!-- /.row -->
+              </div>
+            </div>
+            <!-- /.widget-user -->
+        </div>
+        {#% if user.is_superuser or request.user|has_group:"Administrateur" %#}
+          </a>
+        {#% endif %#}
+
+
+        {#% if user.is_superuser %#}
+        <a href="{#% url 'parametre:vente' %#}">
+        {#% endif %#}
+        <div class="col-md-4">
+          <!-- Widget: user widget style 1 -->
+          <div class="box box-widget widget-user">
+            <!-- Add the bg color to the header using any of the bg-* classes -->
+            <div class="widget-user-header bg-orange">
+              <h3 class="widget-user-username">ENTRETIENS ET REPARATIONS</h3>
+              <h5 class="widget-user-desc"></h5>
+            </div>
+            <div class="widget-user-image">
+              <img class="img-rectangle" src="{% static 'images/logo.png' %}" alt="User Avatar">
+            </div>
+            <div class="box-footer">
+              <div class="row">
+                <div class="col-sm-4 border-right">
+                  <div class="description-block">
+                    <h5 class="description-header"></h5>
+                    <span class="description-text"></span>
+                  </div>
+                  <!-- /.description-block -->
+                </div>
+                <!-- /.col -->
+                <div class="col-sm-4 border-right">
+                  <div class="description-block">
+                    <h5 class="description-header"></h5>
+                    <span class="description-text"></span>
+                  </div>
+                  <!-- /.description-block -->
+                </div>
+                <!-- /.col -->
+                <div class="col-sm-4">
+                  <div class="description-block">
+                    <h5 class="description-header"></h5>
+                    <span class="description-text"></span>
+                  </div>
+                  <!-- /.description-block -->
+                </div>
+                <!-- /.col -->
+              </div>
+              <!-- /.row -->
+            </div>
+          </div>
+          <!-- /.widget-user -->
+        </div>
+        {#% if user.is_superuser %#}
+          </a>
+        {#% endif %#}
+
+
+
+  </div>   
+</div>
+{% endblock content %}

@@ -1,0 +1,93 @@
+{% extends 'commande/base.html' %}
+{% load static %}
+
+{% block javascript %}
+  <script src="{% static 'commande/js/commandes.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+  <h1 class="page-header">{{ commandes.count }} Commandes</h1>
+  <p>
+    <button type="button" class="btn btn-primary js-create-commande" data-url="{% url 'commande:commande_create' %}" data-toggle="modal" data-target="#modal-commande">
+      <span class="glyphicon glyphicon-plus"></span>
+      commande
+    </button>
+  </p>
+  <table class="table table-bordered table-striped" cellspacing="0" width="100%" id="commande-table">
+    <thead>
+      <tr>
+        <th>Etat</th>
+        <th>Date</th>
+        <th>Clients</th>
+        <th>Description</th>
+        <th>Tonnage</th>
+        <th>Volume</th>
+        <th><center>Actions</center></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% include 'commande/includes/partial_commande_list.html' %}
+    </tbody>
+  </table>
+
+  <div class="modal fade" id="modal-commande">
+    <div class="modal-dialog">
+      <div class="modal-content">
+
+      </div>
+    </div>
+  </div>
+
+<script src="{% static 'commande/js/jquery-3.3.1.min.js' %}"></script>
+<script src="{% static 'commande/js/jquery.dataTables.min.js' %}"></script>
+
+<style type="text/css">
+  th, td {
+    white-space: nowrap;
+}
+</style>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('#commande-table').DataTable({
+      'paging'      : true,
+      'lengthChange': false,
+      "lengthMenu"  : [[15, 50, -1], [15, 50, "All"]],
+      'searching'   : true,
+      'ordering'    : false,
+      'info'        : true,
+      'autoWidth'   : true,
+      'scrollX'     : true,
+      'scrollY'     : '400',
+      'scrollCollapse' : true,  
+
+      dom: 'Bfrtip',
+            buttons: ['print', 'excel', 'pdf', 'csv'
+
+      ],
+
+      "language": {
+        "sProcessing": "Traitement en cours ...",
+        "sLengthMenu": "Afficher _MENU_ lignes",
+        "sZeroRecords": "Aucun résultat trouvé",
+        "sEmptyTable": "Aucune donnée disponible",
+        "sInfo": "Lignes _START_ à _END_ sur _TOTAL_",
+        "sInfoEmpty": "Aucune ligne affichée",
+        "sInfoFiltered": "(Filtrer un maximum de_MAX_)",
+        "sInfoPostFix": "",
+        "sSearch": "Chercher:",
+        "sUrl": "",
+        "sInfoThousands": ",",
+        "sLoadingRecords": "Chargement...",
+        "oPaginate": {
+          "sFirst": "Premier", "sLast": "Dernier", "sNext": "Suivant", "sPrevious": "Précédent"
+      },
+        "oAria": {
+          "sSortAscending": ": Trier par ordre croissant", "sSortDescending": ": Trier par ordre décroissant"
+      }
+    }
+  });
+});    
+</script>
+
+{% endblock %}

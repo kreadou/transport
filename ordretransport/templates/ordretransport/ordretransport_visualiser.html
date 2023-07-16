@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
+{% load crispy_forms_tags %}
+{% load has_group %}
+
+{% block header %}
+  {% include "ordretransport/header.html" %}        
+{% endblock header %}   
+
+{% block aside %}
+  {% include "ordretransport/aside.html" %}        
+{% endblock aside %}    
+
+{% block footer %}
+  {#% include "ordretransport/footer.html" %#}        
+{% endblock footer %} 
+
+
+{% block content %}    
+<section class="content-header">
+  <h1>Visualiser un OT</h1>
+  <ol class="breadcrumb">
+     <a href="{% url 'ordretransport:ordretransport_creer' %}"><span class="btn btn-xs btn-primary">Ajout d'un OT</span></a>
+   </ol>
+</section>
+
+<!-- Main content -->
+<section class="content">
+  <div class="row">
+    <div class="col-lg-8" style="float:none;margin:auto;">
+      <div class="box box-primary">
+        <div class="box-header"></div>
+        <div class="box-body">
+          {{ form|crispy }}
+        </div>
+      </div>
+      <a href="{% url 'ordretransport:accueil' %}"><span class="btn btn-primary pull-right">Annuler</span></a>    
+    </div>
+  </div>
+</section>
+{% endblock content %}

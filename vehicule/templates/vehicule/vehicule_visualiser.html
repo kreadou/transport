@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
+{% load crispy_forms_tags %}
+{% load has_group %}
+
+{% block aside %}
+  {% include "vehicule/aside.html" %}        
+{% endblock aside %}    
+
+{% block footer %}
+  {#% include "vehicule/footer.html" %#}        
+{% endblock footer %} 
+
+
+{% block content %}    
+<section class="content-header">
+  <h1>Visualiser le véhicule : {{ vehicule.immatriculation }}</h1>
+  <ol class="breadcrumb">
+     <a href="{% url 'vehicule:vehicule_creer' %}"><span class="btn btn-xs btn-primary">Ajout d'un vehicule</span></a>
+   </ol>
+</section>
+
+<!-- Main content -->
+<section class="content">
+  <div class="row">
+    <div class="col-lg-8" style="float:none;margin:auto;">
+      <div class="box box-primary">
+        <div class="box-header"></div>
+        <div class="box-body">
+          {{ form|crispy }}
+        </div>
+      </div>
+      <a href="{% url 'vehicule:accueil' %}"><span class="btn btn-primary pull-right">Annuler</span></a>    
+    </div>
+  </div>
+</section>
+{% endblock content %}

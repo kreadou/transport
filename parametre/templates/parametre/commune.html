@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
+{% load crispy_forms_tags %}
+
+{% block aside %}
+  {% include "parametre/aside.html" %}        
+{% endblock aside %}    
+
+{% block header %}
+  {% include "parametre/header.html" %}        
+{% endblock header %}   
+
+{% block footer %}       
+{% endblock footer %}   
+
+{% block content %}    
+<section class="content-header">
+  <h1>Sources et Destinations des trajets</h1>
+  <ol class="breadcrumb">
+    <a href="{% url 'parametre:index' %}"><span class="btn btn-xs btn-primary">Accueil</span></a>
+   </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="box box-primary">
+        <div class="box-header">
+          <h3 class="box-title"><span class="label label-primary">Sources et destinations des trajets <span class="badge">{{ formset|length|sub:3 }}</span></span></h3>
+        </div>
+       <div class="box-body">  
+       <form class="form" id="signup_form" method="post" action="{% url 'parametre:commune' %}"> {% csrf_token %} 
+        {{ formset.non_form_errors.as_ul }}
+          {{ formset.management_form }}
+           <table id="table1" class="table table-bordered table-striped" cellspacing="10" style="width:100%">
+              {% for form in formset.forms %}
+                {% if forloop.first %}
+                <thead><tr bgcolor="#bee5eb">
+                  <th>Pays</th>
+                  <th>Lieu de chargements / déchargements</th>
+                </tr></thead>
+                {% endif %}
+                <tr class="{% cycle 'row1' 'row2' %}">
+                {% for field in form.visible_fields %}
+                  <td>
+                  {# Include the hidden fields in the form #}
+                  {% if forloop.first %}
+                    {% for hidden in form.hidden_fields %}
+                    {{ hidden }}
+                    {% endfor %}
+                  {% endif %}
+                    {{ field.errors.as_ul }}
+                    {{ field|as_crispy_field }}
+                  </td>
+                {% endfor %}
+                </tr>
+              {% endfor %}
+            </table>
+
+           <button class="btn btn-primary" type="submit" name="submit" value = "enregistrer">Enregistrer</button>
+          </form>
+        </div> 
+        </div> 
+     </div>
+  </div>
+</section>  
+
+
+<style type="text/css">
+  th, td {
+    white-space: nowrap;
+}
+</style>
+
+<script>
+  $(function () {
+    $('#table1').DataTable({
+      'paging'      : false,
+      'lengthChange': true,
+      "lengthMenu"  : [[20, -1], [20, "All"]],
+      'searching'   : false,
+      'ordering'    : false,
+      'info'        : false,
+      'autoWidth'   : true,
+      'scrollY'     : 400,
+      'scrollCollapse' : true,
+    })
+  })
+</script>
+{% endblock %}
+

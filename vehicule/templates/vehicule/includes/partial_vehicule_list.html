@@ -1,0 +1,32 @@
+{% for vehicule in vehicules %}
+  <tr>
+    <td>
+      {% if vehicule.photo %}
+      <center><img class="img-circle" src="{{ MEDIA_URL }}{{ vehicule.photo.url }}" width= "30", heigth="30"></center>
+      {% endif %}
+    </td>
+    <td>{{ vehicule.type_vehicule }}</td>
+    <td>{{ vehicule.type_carburant }}</td>
+    <td>{{ vehicule.mode_vehicule}}</td>
+    <td>{{ vehicule.immatriculation }}</td>
+    <td>{{ vehicule.date_mise_en_circulation|date:"d M y" }}</td>
+    <td>{{ vehicule.date_effet|date:"d M y" }}</td>
+    <td>{{ vehicule.date_echeance|date:"d M y" }}</td>
+    <td style="width:200px">
+      <button type="button"
+              class="btn btn-warning btn-sm js-update-vehicule" data-toggle="modal" data-target="#modal-vehicule"
+              data-url="{% url 'vehicule:vehicule_update' vehicule.id %}">
+        <span class="glyphicon glyphicon-pencil"></span> Modifier
+      </button>
+      <button type="button"
+              class="btn btn-danger btn-sm js-delete-vehicule" data-toggle="modal" data-target="#modal-vehicule"
+              data-url="{% url 'vehicule:vehicule_delete' vehicule.id %}">
+        <span class="glyphicon glyphicon-trash"></span> Supprimer
+      </button>
+    </td>
+  </tr>
+{% empty %}
+  <tr>
+    <td colspan="8" class="text-center bg-warning">No vehicule</td>
+  </tr>
+{% endfor %}

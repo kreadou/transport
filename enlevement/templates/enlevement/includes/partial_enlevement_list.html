@@ -1,0 +1,28 @@
+{% for enlevement in enlevements %}
+  <tr>
+    <td>{{ enlevement.etat_enlevement }}</td>
+    <td>{{ enlevement.date_enlevement|date:"d M y" }}</td>
+    <td>{{ enlevement.commande }}</td>
+    <td>{{ enlevement.vehicule.immatriculation }}</td>
+    <td align="right">{{ enlevement.poids_charge }}</td>
+    <td>{{ enlevement.trajet }}</td>
+    <td>{{ enlevement.mode_tarification }}</td>
+    <td align="right">{{ enlevement.cout_unitaire }}</td>
+    <td style="width:200px">
+      <button type="button"
+              class="btn btn-warning btn-sm js-update-enlevement" data-toggle="modal" data-target="#modal-enlevement"
+              data-url="{% url 'enlevement:enlevement_update' enlevement.id %}">
+        <span class="glyphicon glyphicon-pencil"></span> Modifier
+      </button>
+      <button type="button"
+              class="btn btn-danger btn-sm js-delete-enlevement" data-toggle="modal" data-target="#modal-enlevement"
+              data-url="{% url 'enlevement:enlevement_delete' enlevement.id %}">
+        <span class="glyphicon glyphicon-trash"></span> Supprimer
+      </button>
+    </td>
+  </tr>
+{% empty %}
+  <tr>
+    <td colspan="8" class="text-center bg-warning">No enlevement</td>
+  </tr>
+{% endfor %}

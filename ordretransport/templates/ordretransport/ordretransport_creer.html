@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
+{% load crispy_forms_tags %}
+{% load has_group %}
+
+
+{% block aside %}
+  {% include "ordretransport/aside.html" %}        
+{% endblock aside %}    
+
+
+{% block content %}    
+<section class="content-header">
+  <h1>Ajout d'un OT</h1>
+  <ol class="breadcrumb">
+    <a href="{% url 'ordretransport:accueil' %}"><span class="btn btn-xs btn-primary">Retour</span></a>
+  </ol>
+</section>
+
+<!-- Main content -->
+<section class="content">
+  <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+  {{ form.media }}
+
+<form method="post" action="{% url 'ordretransport:ordretransport_creer' %}" enctype="multipart/form-data"> {% csrf_token %} 
+  <div class="row">       
+    <div class="col-xs-12">
+      <div class="box box-primary">
+        <div class="box-header"></div>
+        <div class="box-body">
+          <div class="form-row">
+            <div class="form-group col-md-8 mb-0">
+              {{ form.commande|as_crispy_field }}
+            </div>    
+            <div class="form-group col-md-4 mb-0">
+              {{ form.date_ot|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-4 mb-0">
+              {{ form.qui_enleve|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-4 mb-0">
+              {{ form.executant|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-4 mb-0">
+              {{ form.observation|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-12 mb-0">
+              <table id="table1" class="table table-bordered table-striped" cellspacing="0" width="100%">
+                {{ formset.management_form }}
+                <thead><tr bgcolor="#bee5eb">
+                  <tr>
+                    <th>Itinéraire</th>
+                    <th>Marchandise</th>
+                    <th>Quantité</th>
+                    <th>PU</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for form in formset.forms %}
+                    <tr class="{% cycle 'row1' 'row2' %}">
+                    {% for field in form.visible_fields %}
+                      <td>
+                      {# Include the hidden fields in the form #}
+                      {% if forloop.first %}
+                        {% for hidden in form.hidden_fields %}
+                        {{ hidden }}
+                        {% endfor %}
+                      {% endif %}
+                        {{ field.errors.as_ul }}
+                        {{ field|as_crispy_field }}
+                      </td>
+                    {% endfor %}
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button class="btn btn-primary" type="submit" name="submit" value = "enregistrer">Enregistrer</button>
+  <a href="{% url 'ordretransport:accueil' %}"><span class="btn btn-primary pull-right">Annuler</span></a>
+</form>  
+</section>
+<!-- 
+FIN DU TEMPLATE POUR LES DATES -->
+<script src="{% static 'devis/css/bootstrap.min.css' %}"></script>
+<script src="{% static 'devis/js/bootstrap.min.js' %}"></script>
+{% endblock content %} 

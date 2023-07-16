@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
+{% load crispy_forms_tags %}
+{% load has_group %}
+
+{% block aside %}
+  {% include "marchandise/aside.html" %}        
+{% endblock aside %}    
+
+
+{% block content %}    
+<section class="content-header">
+  <h1>Modifier la marchandise : {{ marchandise.libelle }}</h1>
+  <ol class="breadcrumb">
+     <a href="{% url 'marchandise:accueil' %}"><span class="btn btn-xs btn-primary">Retour</span></a>
+   </ol>
+</section>
+
+<!-- Main content -->
+<section class="content">
+  <div class="row">
+    <form method="post" action="{% url 'marchandise:marchandise_modifier' pk=marchandise.id %}" enctype="multipart/form-data"> {% csrf_token %}    
+    <div class="col-lg-6">
+      <div class="box box-primary">
+        <div class="box-header"></div>
+        <div class="box-body">
+          {{ form|crispy }}
+        </div>
+      </div>
+      <button class="btn btn-primary" type="submit" name="submit" value = "enregistrer">Enregistrer</button>
+      <a href="{% url 'marchandise:accueil' %}"><span class="btn btn-primary pull-right">Annuler</span></a>    
+    </div>
+  </form>
+  </div>
+</section>
+{% endblock content %}

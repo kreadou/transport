@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<section class="content">
+<div class="row">
+  <div class="col-lg-3"> 
+  </div> 
+  
+  <div class="col-lg-6">  
+    <form class="form" method="post" action="{% url 'parametre:contribution' %}"> {% csrf_token %}
+      <div class="box box-primary">
+          <div class="box-header with-border">
+            <h3 class="box-title"><b>Saisie d'une contribution</b></h3>
+          </div>
+          <div class="box-body">
+            <div class="form-row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  {{ form.formule|as_crispy_field  }}
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="form-group">
+                  {{ form.nom|as_crispy_field  }}
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="form-group">
+                  {{ form.prenoms|as_crispy_field  }}
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="form-group">
+                  {{ form.date_naissance|as_crispy_field  }}
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="form-group">
+                  {{ form.lieu_naissance|as_crispy_field  }}
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="form-group">
+                  {{ form.commune|as_crispy_field  }}
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="form-group">
+                  {{ form.cellulaire|as_crispy_field  }}
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="form-group">
+                  {{ form.email|as_crispy_field  }}
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  {{ form.numero_tombola|as_crispy_field  }}
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group" id="numero_dispo">
+                  <br><br><b></b>
+                </div>
+              </div>           
+            </div>
+          </div>
+        </div>
+     <button class="btn btn-success" id="btn_valider" type="submit" name="submit" value = "enregistrer">Valider</button>
+      <!-- Default dropup button -->
+      <!-- Default dropup button -->
+      <a href="{% url 'parametre:accueil' %}"><span class="btn btn-danger pull-right">Annuler</span></a>
+
+      <button type="button" class="btn btn-sm card-button btn-success" id="btn" width="0" height="0" data-toggle="modal"
+                    data-target="#modal-project-1" 
+                    style="position: absolute; bottom: 40px; right:20px; visibility:"False">
+    </form>
+   </div> 
+  <div class="col-lg-3"> 
+  </div>  
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modal-project-1" tabindex="-1"
+    aria-labelledby="modal-project-{{project.pk}}-label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="code_formule">{{ code_formule }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="image_modal">
+              <center><img width="100%" height="50%" src="{% static 'images/expertis.png' %}"></center>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+  <script src="{% static 'js/jquery-3.5.1.js' %}"></script>
+  <script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+
+<script type="text/javascript">
+  $('#id_cellulaire').keyup(function(e)
+                                  {
+    if (/\D/g.test(this.value))
+    {
+      // Filter non-digits from input value.
+      this.value = this.value.replace(/\D/g, '');
+    }
+});
+</script>
+
+
+<script type="text/javascript">
+
+  $("#id_date_naissance").datepicker({
+      dateFormat: "yy-mm-dd"
+  }).datepicker("setDate", "100");
+</script>
+
+<script type="text/javascript">
+  $("#btn_valider").css("visibility", "hidden");
+  $('#id_numero_tombola').keyup(function(){
+    var numero_tombola = $(this).val();
+    var quel_formule = $('#id_formule').val();
+    var url="{% url 'parametre:verification' %}"
+    $.ajax({
+      url: url,
+      data: {
+        'numero_tombola': numero_tombola, 'quel_formule':quel_formule
+      },
+      success: function (data) {
+        if (data.resultat == true) {
+           
+           $("#btn_valider").css("visibility", "visible");
+           //$("#numero_dispo").css("visibility", "hidden");
+        }
+        else {
+           $("#btn_valider").css("visibility", "hidden");
+           //$("#numero_dispo").css("visibility", "visible");
+        }
+     }    
+          //#alert(data[0]["fields"]["numero"]);
+          //$.each(data, function(key, val){
+          //  $("#liste_numero_dispo").append('<option value="' + data[key]["pk"] + '">' + data[key]["fields"]["numero"] + //'</option>');
+    });
+  });
+/*   
+  var numero_tombola = $(this).val();
+  var quel_formule = $('#id_formule').val();
+  alert(numero_tombola);
+  alert(quel_formule);
+  $.ajax({'/verification/',
+      data: {
+        'numero_tombola':numero_tombola,'quel_formule':quel_formule},
+      success: function (data) {
+        alert("ok");
+     }
+  });
+});
+
+*/
+</script>
+
+
+<script type="text/javascript">
+  $("#btn").css("visibility", "hidden");
+
+  $('#id_formule').on('change', function(e) {
+      e.preventDefault();
+      
+      var quel_formule = this.value;
+      if (quel_formule == 1){
+          document.getElementById("code_formule").innerHTML="<b>Formule A : 25 000</b>";
+          document.getElementById("image_modal").innerHTML="<center><img width='100%' height='50%' src='{% static 'images/formulea.png' %}'></center>";
+          document.getElementById("numero_dispo").innerHTML="<br><br><b>N° COMPRIS ENTRE 000 ET 999</b>";
+      }
+      else if (quel_formule == 2){
+        document.getElementById("code_formule").innerHTML="<b>Formule B : 50 000</b>";
+        document.getElementById("image_modal").innerHTML="<center><img width='100%' height='50%' src='{% static 'images/formuleb.png' %}'></center>";
+        document.getElementById("numero_dispo").innerHTML="<br><br><b>N° COMPRIS ENTRE 000 ET 449</b>"; 
+      }
+      
+      else if (quel_formule == 3){
+        document.getElementById("code_formule").innerHTML="<b>Formule C : 100 000</b>";
+        document.getElementById("image_modal").innerHTML="<center><img width='100%' height='50%' src='{% static 'images/formulec.png' %}'></center>";
+        document.getElementById("numero_dispo").innerHTML="<br><br><b>N° COMPRIS ENTRE 000 ET 249</b>";
+
+      }
+      else if (quel_formule == 4){
+        document.getElementById("code_formule").innerHTML="<b>Formule D : 250 000</b>";
+        document.getElementById("image_modal").innerHTML="<center><img width='100%' height='50%' src='{% static 'images/formuled.png' %}'></center>";
+        document.getElementById("numero_dispo").innerHTML="<br><br><b>N° COMPRIS ENTRE 00 ET 99</b>";
+      }      
+      
+      $('#numero_dispo').css({ color : 'red'})
+      $('#btn').trigger('click'); // $('#id_nom').focus();équivalentde#lien1').click();
+      
+      var url = "numero_dispo";
+      $.ajax({
+          url: url,
+          data: {
+            'quel_formule': quel_formule 
+          },
+          success: function (data) {
+              //$("#numero_dispo").css("visibility", "visible");
+              //#alert(data[0]["fields"]["numero"]);
+              //$.each(data, function(key, val){
+              //  $("#liste_numero_dispo").append('<option value="' + data[key]["pk"] + '">' + data[key]["fields"]["numero"] + //'</option>');
+        } 
+      });
+
+      $("#id_numero_tombola").val('')
+      $("#btn_valider").css("visibility", "hidden");
+      //var zone_texte = var numero_tombola = $("#id_numero_tombola").val();
+      //$('#id_numero_tombola').trigger('keyup');
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
+{% load crispy_forms_tags %}
+{% load has_group %}
+
+{% block header %}
+  {% include "planning/header.html" %}        
+{% endblock header %}   
+
+{% block aside %}
+  {% include "planning/aside.html" %}        
+{% endblock aside %}    
+
+{% block footer %}
+  {#% include "planning/footer.html" %#}        
+{% endblock footer %} 
+
+
+{% block content %}    
+<section class="content-header">
+  <h1>Visualiser la prise du véhicule {{ planning.vehicule.immatriculation }}</h1>
+  <ol class="breadcrumb">
+     <a href="{#% url 'auto:paiement_commission_restant_lister' %#}"><span class="btn btn-xs btn-primary">Ajout d'une prise de planning</span></a>
+   </ol>
+</section>
+
+<!-- Main content -->
+<section class="content">
+  <div class="row">
+    <div class="col-lg-8" style="float:none;margin:auto;">
+      <div class="box box-primary">
+        <div class="box-header"></div>
+        <div class="box-body">
+          {{ form|crispy }}
+        </div>
+      </div>
+      <a href="{% url 'planning:accueil' %}"><span class="btn btn-primary pull-right">Annuler</span></a>    
+    </div>
+  </div>
+</section>
+{% endblock content %}

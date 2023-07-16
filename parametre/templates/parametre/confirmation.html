@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<section class="content">
+<div class="row">
+  <div class="col-lg-3"> 
+  </div> 
+  
+  <div class="col-lg-6">  
+    <div class="box box-primary">
+          <div class="box-header with-border">
+            <h3 class="box-title"><b>CONFIRMATION</b></h3>
+          </div>
+          <div class="box-body">
+              <table id="table1" class="table table-bordered table-striped" cellspacing="0" width="100%">
+                <tr>
+                  <td width="200"><h4>Formule</h4></td><td width="150" style="background-color:black; color:white; border-top:5px solid #ED7211; border-bottom:5px solid #ED7211;"><b><h4><center>{{ participant.formule }}</center></h4></b></td>
+                </tr>
+                <tr>
+                  <td>Nom & Prénoms</td><td><b>{{ participant.nom }} {{ participant.prenoms }}</b></td>
+                </tr>
+                <tr>
+                  <td>Né(e) le</td><td><b>{{ participant.date_naissance }}</b></td>
+                </tr>
+                <tr>
+                  <td>A</td><td><b>{{ participant.lieu_naissance }}</b></td>
+                </tr>
+                <tr>
+                  <td>Commune résidence</td><td><b>{{ participant.commune }}</b></td>
+                </tr>
+                <tr>
+                  <td>Téléphone</td><td><b>{{ participant.cellulaire }}</b></td>
+                </tr>
+                <tr>
+                  <td>E-mail</td><td><b>{{ participant.email }}</b></td>
+                </tr>
+                <tr>
+                  <td><b><h4>Numéro choisi</h4></b></td><td style="background-color:black; color:white; border-top:5px solid #ED7211; border-bottom:5px solid #ED7211;"><b><h4><center>{{ participant.numero_tombola }}</center></h4></b></td>
+                </tr> 
+                <tr>
+                  <td valign="center">Votre QR Code</td><td align="center"><img class="img-responsive" src="/media/qrcode/{{ participant.fichier_qrcode }}" width="60%" height="50%" /></td>
+                </tr>  
+              </table>
+          </div>
+        </div>
+    <a href="{% url 'parametre:confirmation_valider' %}"><span class="btn btn-success">Confirmer</span></a>
+    <a href="{% url 'parametre:accueil' %}"><span class="btn btn-danger pull-right">Annuler</span></a>
+  </div> 
+
+  <div class="col-lg-3"> 
+  </div>  
+</div>
+</section>
+  <script src="{% static 'js/jquery-3.5.1.js' %}"></script>
+  <script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
+{% load has_group %}
+{% load lire_dict %}
+
+
+{% block aside %}
+  {% include "facturation/aside.html" %}        
+{% endblock aside %}    
+
+{% block footer %}
+  {#% include "facturation/footer.html" %#}        
+{% endblock footer %} 
+
+{% block content %}    
+<section class="content-header">
+  <h1>Facture N° {{ facturation.id }}-{{ facturation.commande.date_commande|date:"d M y" }}-{{ facturation.commande.client }} </h1>
+  <ol class="breadcrumb">
+    <a href="{% url 'facturation:facturation_imprimer' facturation.id %}" target="_blank"><span class="btn btn-xs btn-primary">Imprimer la facture</span></a>
+    <a href="{% url 'facturation:accueil' %}" target="_blank"><span class="btn btn-xs btn-primary">Retour facturation</span></a>
+  </ol>
+</section>
+
+<section class="content">  
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="box box-primary">
+        <div class="box-header"></div>
+        <div class="box-body">
+          <table id="table1" class="table table-bordered table-striped" cellspacing="0" width="100%">
+            <tbody>
+              <tr>
+                <td><b>ADRESSE DE LIVRAISON</b></td> <td></td> <td><b>DOIT :</b></td> <td></td> <td></td>
+              </tr>  
+              <tr>
+                <td>{{ facturation.commande.client_pour_compte }}</td> <td></td> <td>{{ facturation.commande.client }}</td> <td></td> <td></td>
+              </tr>  
+              <tr>
+                <td></td> <td></td> <td>{{ facturation.commande.client.adresse }}</td> <td></td> <td></td>
+              </tr>  
+
+              <tr>
+                <td><b>VOS REFERENCES</b></td> <td></td> <td>{{ facturation.commande.client.boite_postale }}</td> <td></td><td></td>
+              </tr>  
+              <tr>
+                <td>{{ facturation.commande.navire }}</td> <td></td> <td>{{ facturation.commande.client.compte_contribuable }}</td> <td></td> <td></td>
+              </tr>  
+              <tr>
+                <td>BC : {% if facturation.commande.bon_cde %} {{ facturation.commande.bon_cde }} {% endif %}</td> <td></td> <td>{{ facturation.commande.registre_commerce }}</td> <td></td> <td></td>
+              </tr>  
+
+              <tr>
+                <td><b>NOS REFERENCES</b></td> <td></td> <td>Abidjan, le {{ facturation.date_facture }}</td> <td></td> <td></td>
+              </tr>  
+              <tr>
+                <td>Réf FACT. : </td>{{ facturation.numero_commande }}<td></td> <td></td> <td></td> <td></td>
+              </tr>  
+              <tr>
+                <td>BL : {{ facturation.bon_livraison }}</td><td></td> <td></td> <td></td> <td></td>
+              </tr>  
+              <tr>
+                <td></td> <td></td> <td></td> <td></td> <td></td>
+              </tr>  
+            </tbody>
+          </table>    
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="box box-primary">
+        <div class="box-header"><b>ENLEVEMENTS</b></div>
+        <div class="box-body">
+          <table id="table2" class="table table-bordered table-striped" cellspacing="0" width="100%">
+            <tfoot>
+            <tbody>
+              {% for i in ot_dict %}
+                <tr>
+                  <td align="center"><b></b></td>
+                  <td><b>ITINERAIRES</b></td>
+                  <td><b>MARCHANDISES</b></td>
+                  <td align="right"><b>QUANTITE</b></td>
+                  <td align="right"><b>PU HT</b></td>
+                  <td align="right"><b>MONTANT</b></td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                {% for j in ot_dict|lire_dict:i %}
+                  <tr>
+                    <td align="center">{{ forloop.counter }}</td>
+                    <td>{{j.0}} - {{j.1}}</td>
+                    <td>{{j.2}}</td>
+                    <td align="right">{{ j.3|floatformat:'2' }}</td>
+                    <td align="right">{{ j.4|floatformat:'0' }}</td>
+                    <td align="right">{{ j.5|floatformat:'0' }}</td>
+                  </tr>
+                {% endfor %}
+              {% endfor %} 
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="5" align="right"><b>Montant HT</b></td>
+                <td align="right"><b>{{ montant_total_ht|floatformat:"0"}}</b></td>
+              </tr>
+              <tr>
+              </tr>
+              <tr>
+                <td colspan="5" align="right"><b>TVA 18%</b></td>
+                <td align="right"><b>{{montant_tva|floatformat:"0"}}</b></td>
+              </tr>
+              {% if montant_carburant %}
+              <tr>
+                <td colspan="5" align="right"><b>Avance perçue</b></td>
+                <td align="right"><b>-{{ montant_carburant|floatformat:"0"}}</b></td>
+              </tr>
+              {% endif %}
+              <tr>
+                <td colspan="5" align="right"><b>Montant net à payer</b></td>
+                <td align="right"><b>{{ montant_net|floatformat:"0"}}</b></td>
+              </tr>
+            </tfoot>           
+          </table>    
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  {% comment %}
+  {% if montant_carburant %}
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="box box-primary">
+        <div class="box-header"><b>PRE-FINANCEMENTS</b></div>
+        <div class="box-body">
+          <table id="table3" class="table table-bordered table-striped" cellspacing="0" width="100%">
+            <thead>  
+              <tr>
+                <th><center>OT</center></th>    
+                <th><center>Date</center></th>
+                <th><center>N° Bon</center></th>
+                <th><center>Type</center></th>
+                <th><center>Véhicule</center></th>
+                <th><center>Chauffeur</center></th>
+                <th><center>Imputation</center></th>
+                <th><center>Km</center></th>
+                <th><center>Quantité</center></th>
+                <th><center>Montant</center></th>
+                <th><center>Station</center></th>              
+              </tr>
+            </thead>
+            <tbody>
+              {% for i in facturation.commande.ordretransport_set.all %}
+                {% for j in i.carburant_set.all %}
+                  {% if j.imputation == 'Préfinancement' %}
+                    <tr>
+                      <td>{{ i.numero_ot }}</td>
+                      <td>{{ j.date_prise|date:"d M y" }}</td>
+                      <td>{{ j.numero_bon }}</td>
+                      <td>{{ j.type_carburant }}</td>
+                      <td>{{ j.vehicule.immatriculation }}</td>
+                      <td>{{ j.chauffeur }}</td>
+                      <td>{{ j.imputation }}</td>
+                      <td align="right">{{ j.kilometrage }}</td>
+                      <td align="right">{{ j.quantite }}</td>
+                      <td align="right">{{ j.montant }}</td>
+                      <td></td>
+                    </tr>
+                  {% endif %}  
+                {% endfor %}
+              {% endfor %}
+            </tbody>
+          </table>    
+        </div>
+      </div>    
+    </div>  
+  </div>  
+  {% endif %}
+
+  {% endcomment %}
+
+
+
+</section>
+
+<script src="{% static 'js/jquery-3.5.1.js' %}"></script>
+<script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+
+<style type="text/css">
+  th, td {
+    white-space: nowrap;
+}
+</style>
+
+{% endblock content %}
+

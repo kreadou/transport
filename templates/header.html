@@ -1,0 +1,178 @@
+{% load static %}
+  <header class="main-header">
+
+    <!-- Logo -->
+    <a href="" class="logo">
+      <!-- mini logo for sidebar mini 50x50 pixels -->
+      <span class="logo-mini"><b>C</b>I</span>
+      <!-- logo for regular state and mobile devices -->
+      <span class="logo-lg"><b>COCO INTER</b></span>
+    </a>
+
+    <!-- Header Navbar: style can be found in header.less -->
+    <nav class="navbar navbar-static-top">
+      <!-- Sidebar toggle button-->
+      <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+        <span class="sr-only">Toggle navigation</span>
+      </a>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
+        <ul class="nav navbar-nav">
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">APPLICATIONS <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="{% url 'devis:accueil' %}"><i class="fa fa-paper" style="color:orange"></i>Devis</a></li>
+                <li><a href="{% url 'commande:accueil' %}"><i class="fa fa-user" style="color:orange"></i>Commandes</a></li>
+                <li><a href="{% url 'ordretransport:accueil' %}"><i class="fa fa-user" style="color:orange"></i>OT</a></li>
+                <li><a href="{% url 'facturation:accueil' %}"><i class="fa fa-user" style="color:orange"></i>Facturations</a></li>
+                <li><a href="{% url 'reglement:accueil' %}"><i class="fa fa-user" style="color:orange"></i>Règlements</a></li>
+                <li><a href="{% url 'entretien:accueil' %}"><i class="fa fa-user" style="color:orange"></i>Entretiens</a></li>  
+                <li><a href="{% url 'reparation:accueil' %}"><i class="fa fa-user" style="color:orange"></i>Réparations</a></li>
+                <li><a href="{% url 'alerte:accueil' %}"><i class="fa fa-user" style="color:orange"></i>Alertes</a></li>      
+                <li><a href="{% url 'client:accueil' %}"><i class="fa fa-user" style="color:orange"></i>Clients</a></li>
+                <li><a href="{% url 'marchandise:accueil' %}"><i class="fa fa-user" style="color:orange"></i>Marchandises</a></li>
+                <li><a href="{% url 'carburant:accueil' %}"><i class="fa fa-user" style="color:orange"></i>Carburant</a></li>
+                <li><a href="{% url 'vehicule:accueil' %}"><i class="fa fa-user" style="color:orange"></i>Véhicules</a></li>
+                <li><a href="{% url 'chauffeur:accueil' %}"><i class="fa fa-users" style="color:orange"></i>Chauffeurs</a></li>                 
+                <li><a href="{% url 'parametre:accueil' %}"><i class="fa fa-user" style="color:orange"></i>Accueil</a></li>
+                {% if user.is_superuser %}
+                  <li><a href="{% url 'tableaubord:accueil' %}"><i class="fa fa-bar-chart-o" style="color:blue"></i>Tableaux de bords</a></li>
+                {% endif %}
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+      <!-- Navbar Right Menu -->
+      <div class="navbar-custom-menu">
+        <ul class="nav navbar-nav">
+          
+
+         <li class="dropdown messages-menu">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <i class="fa fa-car"></i>
+              <span class="label label-success">{% if total_alerte_vehicule %} {{ total_alerte_vehicule }} {% else %} {% endif %}</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li class="header">Alertes véhicules {{ total_alerte_vehicule }} alerte(s)</li>
+              <li>
+                <!-- inner menu: contains the actual data -->
+                <ul class="menu">
+                  {% for i, j in type_alerte_vehicule.items %}
+                  <li><!-- start message -->
+                    <a href="#">
+                      <div class="pull-left">
+                        <img src="{% static 'images/vehicule.jpg' %}" class="img-circle" alt="User Image">
+                      </div>
+                      <h4>
+                        {{ i }}
+                        <small><i class=""></i> {{ j }}</small>
+                      </h4>
+                      <p></p>
+                    </a>
+                  </li>
+                  {% endfor %}
+                </ul>
+              </li>
+              <li class="footer"><a href="#"></a></li>
+            </ul>
+          </li>
+         
+          <!-- Notifications: style can be found in dropdown.less -->
+          <li class="dropdown notifications-menu">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <i class="fa fa-users"></i>
+              <span class="label label-warning">{{ total_alerte_chauffeur }}</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li class="header">Vous avez {{ total_alerte_chauffeur }} alerte(s)</li>
+              <li>
+                <!-- inner menu: contains the actual data -->
+                <ul class="menu">
+                  {% for i, j in type_alerte_chauffeur.items %}
+                  <li>
+                      <h4>
+                        <i class="fa fa-user text-green"></i> {{ i }}
+                        <small><i class=""></i> {{ j }}</small>
+                      </h4>
+                  </li>
+                  {% endfor %}
+                </ul>
+              </li>
+              <li class="footer"><a href="#"></a></li>
+            </ul>
+          </li>
+
+
+          <!-- Tasks: style can be found in dropdown.less -->
+          <li class="dropdown tasks-menu">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <i class="fa fa-wrench"></i>
+              <span class="label label-danger">{{ total_alerte_entretien }}</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li class="header">Vous avez {{ total_alerte_entretien }} alerte(s)</li>
+              <li>
+                <!-- inner menu: contains the actual data -->
+                <ul class="menu">
+                  {% for i, j in type_alerte_entretien.items %}
+                  <li><!-- Task item -->
+                    <a href="#">
+                      <h3>
+                        {{ i }}
+                        <small class="pull-right">{{ j }}</small>
+                      </h3>
+                      <div class="progress xs">
+                        <div class="progress-bar progress-bar-aqua" style="width: {{j}}%" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
+                          <span class="sr-only">{{ j }}</span>
+                        </div>
+                      </div>
+                    </a>
+                  </li>
+                  {% endfor %}
+                </ul>
+              </li>
+              <li class="footer">
+                <a href="#"></a>
+              </li>
+            </ul>
+          </li>
+
+
+
+
+
+
+          <!-- User Account: style can be found in dropdown.less -->
+          <li class="dropdown user user-menu">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <img src="{{ MEDIA_URL }}{{ user.profil.photo.url }}" class="user-image" alt="User Image">
+              <span class="hidden-xs">{{ user.last_name }}</span>
+            </a>
+            <ul class="dropdown-menu">
+              <!-- User image -->
+              <li class="user-header">
+                <img src="{{ MEDIA_URL }}{{ user.profil.photo.url }}" class="user-image" alt="User Image">
+                <p>
+                  {{ user.last_name }} - {{ user.profil.fonction }}
+                  <small></small>
+                </p>
+              </li>
+              <!-- Menu Body -->
+              <li class="user-body">
+                <!-- /.row -->
+              </li>
+              <!-- Menu Footer-->
+              <li class="user-footer">
+              </li>
+            </ul>
+          </li>
+
+          <!-- Control Sidebar Toggle Button -->
+          <li><a href="{% url 'parametre:accueil' %}">ACCUEIL</a></li>
+          <li><a href="{% url 'parametre:login' %}">LOGOUT</a></li>
+        </ul>
+      </div>
+
+    </nav>
+  </header>
