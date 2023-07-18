@@ -9,7 +9,7 @@ from django.conf import settings
 
 from django.views.generic import ListView, DetailView 
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-
+from django.forms import modelformset_factory
 from parametre.models import * 
 from parametre.forms import *
 
@@ -57,8 +57,6 @@ class ChauffeurDelete(DeleteView):
     model = Chauffeur
     success_url = '/parametre/chauffeur_list'
 
-
-
 class DepenseList(ListView): 
     model = Depense
     template_name = 'parametre/depense_list.html'
@@ -86,58 +84,6 @@ class DepenseDelete(DeleteView):
     model = Depense
     success_url = '/parametre/depense_list'
 
-
-"""
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-
-from .models import Blogs
-from .forms import BlogForm
-
-
-class IndexView(ListView):
-    model = Blogs
-    queryset = Blogs.objects.filter(status='published').all(). \
-        order_by('-published_at')
-    template_name = 'blog/list_view.html'
-    context_object_name = 'index_post_list'
-
-
-class DetailedView(DetailView):
-    model = Blogs
-    template_name = 'blog/detail_view.html'
-    context_object_name = 'post'
-
-
-class ManagePostList(ListView):
-    model = Blogs
-    template_name = 'blog/manage_post_list.html'
-    context_object_name = 'manage_post_list'
-
-
-class AddView(CreateView):
-    model = Blogs
-    form_class = BlogForm
-    template_name = 'blog/add_view.html'
-    success_url = '/'
-
-
-
-class EditView(UpdateView):
-    model = Blogs
-    form_class = BlogForm
-    pk_url_kwarg = 'pk'
-    template_name = 'blog/edit_view.html'
-    success_url = '/blog/manage_post_list'
-
-
-class DeletePostView(DeleteView):
-    model = Blogs
-    pk_url_kwarg = 'pk'
-    template_name = 'blog/delete_view.html'
-    success_url = '/blog/manage_post_list'
-
-
-"""
 
 def profil_utilisateur(request):
     profilFormSet = modelformset_factory(Profil, extra=3, exclude=())
@@ -508,11 +454,6 @@ def fournisseur(request):
                 #i.fields['delai'].widget.attrs.update(size='2%')
             return render(request, 'parametre/fournisseur.html', locals())
     return render(request, 'parametre/fournisseur.html', locals())
-
-
-
-
-
 
 
 def societe(request):

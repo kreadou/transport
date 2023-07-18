@@ -4,9 +4,6 @@ from parametre.models import *
 from django.db.models import Count, Q, Sum, F
 import json
 from . forms import FilterForm
-from Utilitaire import dateAnglaisFrancais, iif, millier, dateFrancaisAnglais
-from django.views.decorators.csrf import csrf_exempt
-
 from alerte_synthese import *
 
 def requete_ajax(request):

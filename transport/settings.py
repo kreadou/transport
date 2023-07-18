@@ -24,8 +24,7 @@ SECRET_KEY = 'django-insecure-$lpb&7dij%&@1-l%to3(jtocydhe9szr+i*)-apjbok!+zct)b
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*','localhost', 'ot', 'cocointer.ci', 'cocointer']
-
+ALLOWED_HOSTS = ['localhost', 'cocointer.pythonanywhere.net']
 
 # Application definition
 
@@ -69,7 +68,6 @@ INSTALLED_APPS += [
     'django_addanother',
 ]
 
-
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 MIDDLEWARE = [
@@ -110,6 +108,7 @@ WSGI_APPLICATION = 'transport.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+"""
 DATABASES = {    
     'default': {
         'ENGINE': 'django.db.backends.postgresql', #_psycopg2',
@@ -129,7 +128,7 @@ DATABASES = {
     }
 }
 
-"""
+
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 

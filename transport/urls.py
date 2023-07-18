@@ -17,22 +17,28 @@ urlpatterns = [
     url(r'^reparation/', include('reparation.urls')),
     url(r'^entretien/', include('entretien.urls')),
     url(r'^alerte/', include('alerte.urls')),
-	url(r'^facturation/', include('facturation.urls')),
-	url(r'^enlevement/', include('enlevement.urls')),
-	url(r'^ordretransport/', include('ordretransport.urls')),
+    url(r'^facturation/', include('facturation.urls')),
+    url(r'^enlevement/', include('enlevement.urls')),
+    url(r'^ordretransport/', include('ordretransport.urls')),
     url(r'^marchandise/', include('marchandise.urls')),
     url(r'^commande/', include('commande.urls')),
     url(r'^detailscommande/', include('detailscommande.urls')),
-	url(r'^carburant/', include('carburant.urls')),
-   	url(r'^vehicule/', include('vehicule.urls')),
-	url(r'^chauffeur/', include('chauffeur.urls')),
+    url(r'^carburant/', include('carburant.urls')),
+    url(r'^vehicule/', include('vehicule.urls')),
+    url(r'^chauffeur/', include('chauffeur.urls')),
     url(r'^$', djviews.LogoutView.as_view(next_page='parametre:login')), 
     url('ot', djviews.LogoutView.as_view(next_page='parametre:login')), 
-    url('cocointer.ci', djviews.LogoutView.as_view(next_page='parametre:login')), 
+    url('cocointer.pythonanywhere.net', djviews.LogoutView.as_view(next_page='parametre:login')), 
     url(r'^parametre/', include('parametre.urls')),
-    url('admin/', admin.site.urls)
+    url('admin/', admin.site.urls),
 ] 
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+
+
+"""
+
+"""

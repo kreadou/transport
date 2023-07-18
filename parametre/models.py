@@ -861,9 +861,9 @@ class Para(models.Model):
 
     date_debut = models.DateField(default=timezone.now, blank=True, verbose_name="date début exercice")
     date_fin = models.DateField(default=timezone.now, blank=True, verbose_name="date fin exercice")
-
+    
     def __str__(self):
-        return "{0}, {1}, {2}, {3}".format(dateAnglaisFrancais(self.date_debut), dateAnglaisFrancais(self.date_fin), self.numero_ot, self.numero_facture)
+        return "{}, {}, {}, {}".format(dateAnglaisFrancais(self.date_debut), dateAnglaisFrancais(self.date_fin), self.numero_ot, self.numero_facture)
 
 
 class Depense(models.Model):

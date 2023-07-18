@@ -8,25 +8,27 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <!-- Bootstrap 3.3.7 <link rel="stylesheet" href="{% static 'bower_components/bootstrap/dist/css/bootstrap.min.css' %}">-->
-    <link rel="stylesheet" href="{% static 'parametre/css/bootstrap.min.css' %}">
+  <!-- Bootstrap 3.3.6 -->
+  <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
        <!-- DataTables -->
-    <link rel="stylesheet" href="{% static 'parametre/css/dataTables.bootstrap.min.css' %}">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="{% static 'parametre/css/font-awesome.min.css' %}">
-    <!-- Ionicons -->
-    <link rel="stylesheet" href="{% static 'parametre/css/ionicons.min.css' %}">
-    <!-- jvectormap -->
-    <link rel="stylesheet" href="{% static 'parametre/css/jquery-jvectormap.css' %}">
-    <!-- Theme style -->
-    <link rel="stylesheet" href="{% static 'parametre/css/AdminLTE.min.css' %}">
-    <!-- AdminLTE Skins. Choose a skin from the css/skins
-         folder instead of downloading all of them to reduce the load. -->
-    <link rel="stylesheet" href="{% static 'parametre/css/_all-skins.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/dataTables.bootstrap.min.css' %}">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="{% static 'css/ionicons.min.css' %}">
   
-     <!--<link rel="stylesheet" href="{% static 'css/dataTables.css' %}"> -->
-    <link rel="stylesheet" href="{% static 'parametre/css/jquery.dataTables.min.css' %}">
-    <link rel="stylesheet" href="{% static 'parametre/css/buttons.dataTables.min.css' %}">
+  <!-- jvectormap -->
+  <link rel="stylesheet" href="{% static 'css/jquery-jvectormap-1.2.2.css' %}">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="{% static 'css/AdminLTE.min.css' %}">
+  <!-- AdminLTE Skins. Choose a skin from the css/skins
+       folder instead of downloading all of them to reduce the load. -->
+  <link rel="stylesheet" href="{% static 'css/_all-skins.min.css' %}">
+
+  <link rel="stylesheet" href="{% static 'css/jquery.dataTables.min.css' %}">
+
+  <link rel="stylesheet" href="{% static 'css/buttons.dataTables.min.css' %}">
   </head>
 
 <body class="hold-transition skin-green layout-top-nav">
@@ -45,24 +47,52 @@
       {#% include "footer.html" %#}
     {% endblock footer %}
   </div>
-
+  <script>
+    $.widget.bridge('uibutton', $.ui.button);
+  </script>
       <!-- jQuery 3 -->
       <script src="{% static 'js/jquery.min.js' %}"></script>
-      <!-- Bootstrap 3.3.7 -->
+      <!-- jQuery UI 1.11.4 -->
+      <script src="{% static 'js/jquery-ui.min.js' %}"></script>
+      <!-- ./wrapper -->
+      <!-- jQuery 2.2.0 -->
+      <script src="{% static 'js/jQuery-2.2.0.min.js' %}"></script>
+      <!-- Bootstrap 3.3.6 -->
       <script src="{% static 'js/bootstrap.min.js' %}"></script>
-      <!-- DataTables -->
-      <script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
-      <script src="{% static 'js/dataTables.bootstrap.min.js' %}"></script>
+      <!-- FastClick -->
+      <script src="{% static 'js/fastclick.js' %}"></script>
+      <!-- AdminLTE App -->
+      <script src="{% static 'js/app.min.js' %}"></script>
+  
       <!-- AdminLTE App -->
       <script src="{% static 'js/adminlte.min.js' %}"></script>
-
-      <script src="{% static 'js/jquery-3.5.1.js' %}"></script>
+  
+      <!-- Sparkline -->
+      <script src="{% static 'js/jquery.sparkline.min.js' %}"></script>
+      <!-- jvectormap -->
+      <script src="{% static 'js/jquery-jvectormap-1.2.2.min.js' %}"></script>
+  
+      <script src="{% static 'js/jquery-jvectormap-world-mill-en.js' %}"></script>
+      <!-- SlimScroll 1.3.0 -->
+      <script src="{% static 'js/jquery.slimscroll.min.js' %}"></script>
+      <!-- ChartJS 1.0.1 -->
+      <script src="{% static 'js/Chart.min.js' %}"></script>
+      <!-- AdminLTE dashboard demo (This is only for demo purposes) 
+      <script src="{% static 'dist/js/pages/dashboard2.js' %}"></script>-->
+      <!-- AdminLTE for demo purposes 
+      <script src="{% static 'dist/js/demo.js' %}"></script>-->
+  
+      <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+      <!-- DataTables 
       <script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+      <script src="{% static 'js/dataTables.bootstrap.min.js' %}"></script>
+      <script src="{% static 'js/dataTables.buttons.min.js' %}"></script>
+      <script src="{% static 'js/buttons.html5.min.js' %}"></script>
+      <script src="{% static 'js/buttons.print.min.js' %}"></script>
+  
       <script src="{% static 'js/dataTables.buttons.min.js' %}"></script>
       <script src="{% static 'js/jszip.min.js' %}"></script>
       <script src="{% static 'js/pdfmake.min.js' %}"></script>
-      <script src="{% static 'js/vfs_fonts.js' %}"></script>
-      <script src="{% static 'js/buttons.html5.min.js' %}"></script>
-      <script src="{% static 'js/buttons.print.min.js' %}"></script>
+      <script src="{% static 'js/vfs_fonts.js' %}"></script>-->
   </body>
 </html>

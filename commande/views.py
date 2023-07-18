@@ -4,9 +4,9 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.template.loader import render_to_string
 from django.views import generic
 from django.conf import settings
-from django.db.models import Sum, F, Avg
-from parametre.models import Commande, Detailscommande, Client, Ordretransport, Marchandise, Trajet, Societe, Para, Devis
+from django.db.models import Sum, F
 from parametre.forms import PeriodeForm
+from parametre.models import Commande, Detailscommande, Client, Ordretransport, Marchandise, Trajet, Societe, Para, Devis#from parametre.forms import PeriodeForm
 from commande.forms import *
 from django_addanother.views import CreatePopupMixin, UpdatePopupMixin
 from Utilitaire import *

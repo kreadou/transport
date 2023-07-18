@@ -7,7 +7,9 @@
       <!-- Sidebar user panel -->
       <div class="user-panel">
         <div class="pull-left image">
+          {% if user.profil.photo %}
           <img src="{{ MEDIA_URL }}{{ user.profil.photo.url }}" class="img-circle" alt="User Image">
+          {% endif %}
         </div>
         <div class="pull-left info">
           <p>{{ user.last_name }}</p>
@@ -15,7 +17,7 @@
           <p><small>{{ user.profil.fonction }}</small></p>
         </div>
       </div>
-      
+
       <!-- sidebar menu: : style can be found in sidebar.less -->
       <ul class="sidebar-menu" data-widget="tree">
         <li class="header" style="color:cyan"><center><h4>PLANNING</h4></center></li>
